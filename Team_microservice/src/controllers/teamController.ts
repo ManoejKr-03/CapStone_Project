@@ -6,7 +6,9 @@ import {
   listRegisteredPlayers,
   handlePlayerAcceptance,
   createTeam,
-  getTeamDetails,
+ // getTeamDetails,
+  getTeamById,
+  sendTeamToOrganizer,
 } from '../services/teamService';
 
 //creating the team route handlers
@@ -22,7 +24,7 @@ export const createNewTeam = async (req: Request, res: Response): Promise<void> 
 //fetching the team details by team_id from the database
 export const fetchTeamDetails = async (req: Request, res: Response): Promise<void> => {
   try {
-    const team = await getTeamDetails(req.params.teamId);
+    const team = await getTeamById(req.params.teamId);
     if (team) {
       res.status(200).json(team);
     } else {
@@ -30,6 +32,29 @@ export const fetchTeamDetails = async (req: Request, res: Response): Promise<voi
     }
   } catch (error) {
     res.status(500).json({ message: 'Error fetching team details', error });
+  }
+};
+
+//sending the team details to the tournament microservice when click the button in tournament (navigation )
+export const sendTeamDetailsToOrganizer = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { teamId } = req.params; // Get the team ID from request parameters
+
+    // Fetch the team details
+    const team = await getTeamById(teamId);
+    if (!team) {
+      res.status(404).json({ message: 'Team not found' });
+      return; // Explicitly return to avoid continuing execution
+    }
+
+    // Send the team details to the Organizer microservice
+    await sendTeamToOrganizer(team);
+
+    // Send success response
+    res.status(200).json({ message: 'Team details sent to Organizer' });
+  } catch (error) {
+    // Send error response in case of failure
+    res.status(500).json({ message: 'Error sending team details to Organizer', error });
   }
 };
 

@@ -37,4 +37,5 @@ mongoose.connect(dbConfig.url, {} as ConnectOptions)
 
 //Define routes here
  app.use('/api', teamRoutes);
+ 
 //app.use('/api/players', playerRoutes);

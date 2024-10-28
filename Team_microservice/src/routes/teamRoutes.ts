@@ -7,6 +7,7 @@ import {
   processPlayerRequest,
   createNewTeam,
   fetchTeamDetails,
+  sendTeamDetailsToOrganizer,
 } from '../controllers/teamController';
 
 const router = Router();
@@ -17,6 +18,7 @@ router.post('/teams', createNewTeam);
 // Fetch team details by team ID
 router.get('/teams/:teamId', fetchTeamDetails);
 
+router.post('/teams/:teamId/send-to-organizer', sendTeamDetailsToOrganizer);
 
 // Team statistics endpoint
 router.get('/teams/:teamId/statistics', fetchTeamStatistics);

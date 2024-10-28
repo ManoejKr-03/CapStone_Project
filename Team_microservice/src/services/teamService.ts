@@ -1,6 +1,7 @@
 // services/teamService.ts
 import Team, { TeamDocument } from '../models/Team';
 import RegisteredPlayer, { RegisteredPlayerDocument } from '../models/RegisteredPlayer';
+import axios from 'axios';
 
 
 //api for creating a new team 
@@ -9,15 +10,30 @@ export const createTeam = async (teamData: TeamDocument): Promise<TeamDocument> 
   return newTeam.save();
 };
 
-
-
-// Fetch details of a specific team by ID
-export const getTeamDetails = async (teamId: string): Promise<TeamDocument | null> => {
-  return Team.findById(teamId);
+// Function to fetch team details by ID
+export const getTeamById = async (teamId: string): Promise<TeamDocument | null> => {
+  return await Team.findById(teamId);
 };
 
+// Function to send team details to Organizer microservice
+export const sendTeamToOrganizer = async (team: TeamDocument): Promise<void> => {
+  const organizerUrl = process.env.ORGANIZER_SERVICE_URL || 'http://localhost:6000/api/organizer/teams';
 
-
+  // Send a POST request to the Organizer microservice with team details
+  await axios.post(organizerUrl, {
+    teamName: team.teamName,
+    seriesId: team.seriesId,
+  //  customer_id: team.customer_id,
+    noOfMatches: team.noOfMatches,
+    wins: team.wins,
+    losses: team.losses,
+    players: team.players,
+  });
+};
+// Fetch details of a specific team by ID
+// export const getTeamDetails = async (teamId: string): Promise<TeamDocument | null> => {
+//   return Team.findById(teamId);
+// };
 // Fetch team statistics
 export const getTeamStatistics = async (teamId: string): Promise<TeamDocument | null> => {
   return Team.findById(teamId);
