@@ -79,7 +79,7 @@ export const addRegisteredPlayer = async (req: Request, res: Response): Promise<
 
 export const getRegisteredPlayers = async (req: Request, res: Response): Promise<void> => {
   try {
-    const registeredPlayers = await listRegisteredPlayers(req.params.teamId);
+    const registeredPlayers = await listRegisteredPlayers(); // Fetch all registered players
     res.status(200).json(registeredPlayers);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching registered players', error });

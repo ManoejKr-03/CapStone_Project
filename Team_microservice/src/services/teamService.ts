@@ -21,6 +21,7 @@ export const sendTeamToOrganizer = async (team: TeamDocument): Promise<void> => 
 
   // Send a POST request to the Organizer microservice with team details
   await axios.post(organizerUrl, {
+    teamId: team.teamId,
     teamName: team.teamName,
     seriesId: team.seriesId,
   //  customer_id: team.customer_id,
@@ -48,8 +49,12 @@ export const registerPlayer = async (playerData: RegisteredPlayerDocument): Prom
 };
 
 // List all registered players for a team
-export const listRegisteredPlayers = async (teamId: string): Promise<RegisteredPlayerDocument[]> => {
-  return RegisteredPlayer.find({ teamId });
+// export const listRegisteredPlayers = async (teamId: string): Promise<RegisteredPlayerDocument[]> => {
+//   return RegisteredPlayer.find({ teamId });
+// };
+export const listRegisteredPlayers = async (): Promise<any[]> => {
+  // Assuming you are using an ORM like Mongoose, Sequelize, etc.
+  return RegisteredPlayer.find(); // Fetch all players without filtering by team ID
 };
 
 // Accept or reject a registered player

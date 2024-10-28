@@ -27,7 +27,7 @@ router.get('/teams/:teamId/statistics', fetchTeamStatistics);
 router.post('/teams/register-player', addRegisteredPlayer);
 
 // List registered players for a team
-router.get('/teams/:teamId/registered-players', getRegisteredPlayers);
+router.get('/teams/db/registered-players', getRegisteredPlayers);
 
 // Accept or reject a registered player
 router.post('/teams/:teamId/registered-players/:action', processPlayerRequest);

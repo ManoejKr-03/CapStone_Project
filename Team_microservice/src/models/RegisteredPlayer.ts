@@ -7,7 +7,7 @@ export interface RegisteredPlayerDocument extends Document {
   playerName: string;
   age: number;
   role: string;
-  teamId: string;
+  teamId: string; //
 }
 
 const RegisteredPlayerSchema: Schema = new Schema({
