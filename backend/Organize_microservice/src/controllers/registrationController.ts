@@ -15,6 +15,7 @@ export const registerTeam = async (req: Request, res: Response): Promise<void> =
   }
 };
 
+
 // Get all registered teams
 export const getRegisteredTeams = async (req: Request, res: Response): Promise<void> => {
   try {
