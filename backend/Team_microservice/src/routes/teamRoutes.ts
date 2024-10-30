@@ -9,6 +9,7 @@ import {
   fetchTeamDetails,
   sendTeamDetailsToOrganizer,
   registerTeamWithOrganizer,
+  fetchTournamentsFromOrganizer,
 } from '../controllers/teamController';
 
 const router = Router();
@@ -34,5 +35,9 @@ router.get('/teams/db/registered-players', getRegisteredPlayers);
 router.post('/teams/:teamId/registered-players/:action', processPlayerRequest);
 
 router.post('/register-team', registerTeamWithOrganizer);
+
+//http://localhost:5000/api/tournaments
+router.get('/tournaments', fetchTournamentsFromOrganizer);
+
 
 export default router;

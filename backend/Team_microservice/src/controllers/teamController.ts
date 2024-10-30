@@ -41,9 +41,9 @@ export const fetchTeamDetails = async (req: Request, res: Response): Promise<voi
 export const registerTeamWithOrganizer = async (req: Request, res: Response): Promise<void> => {
   try {
     const { teamId, tournamentId } = req.body;
-
+   // http://localhost:3000/api/registrations 
     // Forward the registration request to the organizer microservice
-    const response = await axios.post(`${process.env.ORGANIZER_SERVICE_URL}/api/registrations`, {
+    const response = await axios.post(`${process.env.ORGANIZER_SERVICE_URL}/teams`, {
       teamId,
       tournamentId
     });
@@ -51,6 +51,7 @@ export const registerTeamWithOrganizer = async (req: Request, res: Response): Pr
     // Send the response back to the client
     res.status(response.status).json(response.data);
   } catch (error: any) {
+     
     res.status(error.response?.status || 500).json({
       message: 'Error registering team with organizer',
       error: error.response?.data || error.message,
@@ -121,5 +122,22 @@ export const processPlayerRequest = async (req: Request, res: Response): Promise
     res.status(200).json({ message: `Player ${action}ed successfully` });
   } catch (error) {
     res.status(500).json({ message: `Error processing player ${action}`, error });
+  }
+};
+
+
+// Fetch all tournaments from the organizer microservice
+export const fetchTournamentsFromOrganizer = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // Make a GET request to the organizer microservice's tournaments endpoint
+    const response = await axios.get(`http://localhost:3000/api/tournaments`);
+     
+    // Forward the response data to the client
+    res.status(response.status).json(response.data);
+  } catch (error: any) {
+    res.status(error.response?.status || 500).json({
+      message: 'Error fetching tournaments from organizer',
+      error: error.response?.data || error.message,
+    });
   }
 };
