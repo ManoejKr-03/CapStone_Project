@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Match from '../models/match';
+import axios from 'axios';
 
 //another navigation bar for the match creation , update 
 // Create a new match
@@ -33,6 +34,15 @@ export const createMatch = async (req: Request, res: Response): Promise<void> =>
 //     res.status(500).json({ message: 'Error updating match scores', error });
 //   }
  
+// Function to update player stats in the Player Microservice
+const updatePlayerStats = async (playerId: string, runs: number, wickets: number) => {
+  try {
+    const response = await axios.put(`http://localhost:5000/api/players/${playerId}/stats`, { runs, wickets });
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating stats for player ${playerId}`, error);
+  }
+};
 
 export const updateMatchScores = async (req: Request, res: Response): Promise<void> => { 
   try {
@@ -53,23 +63,37 @@ export const updateMatchScores = async (req: Request, res: Response): Promise<vo
     match.secondTeamWickets = secondTeamWickets ?? match.secondTeamWickets;
     match.winner = winner ?? match.winner;
 
-    // Update player stats if provided
+    // Update player stats if provided, and send updates to Player Microservice
     if (firstTeamPlayers && firstTeamPlayers.length === 11) {
-      match.firstTeamPlayers = firstTeamPlayers.map((player: any, index: number) => ({
-        playerId: player.playerId || match.firstTeamPlayers[index].playerId,
-        playerName: player.playerName || match.firstTeamPlayers[index].playerName,
-        runs: player.runs !== undefined ? player.runs : match.firstTeamPlayers[index].runs,
-        wickets: player.wickets !== undefined ? player.wickets : match.firstTeamPlayers[index].wickets,
-      }));
+      match.firstTeamPlayers = firstTeamPlayers.map((player: any, index: number) => {
+        const updatedPlayer = {
+          playerId: player.playerId || match.firstTeamPlayers[index].playerId,
+          playerName: player.playerName || match.firstTeamPlayers[index].playerName,
+          runs: player.runs !== undefined ? player.runs : match.firstTeamPlayers[index].runs,
+          wickets: player.wickets !== undefined ? player.wickets : match.firstTeamPlayers[index].wickets,
+        };
+
+        // Update player stats in Player Microservice
+        updatePlayerStats(updatedPlayer.playerId, updatedPlayer.runs, updatedPlayer.wickets);
+        
+        return updatedPlayer;
+      });
     }
 
     if (secondTeamPlayers && secondTeamPlayers.length === 11) {
-      match.secondTeamPlayers = secondTeamPlayers.map((player: any, index: number) => ({
-        playerId: player.playerId || match.secondTeamPlayers[index].playerId,
-        playerName: player.playerName || match.secondTeamPlayers[index].playerName,
-        runs: player.runs !== undefined ? player.runs : match.secondTeamPlayers[index].runs,
-        wickets: player.wickets !== undefined ? player.wickets : match.secondTeamPlayers[index].wickets,
-      }));
+      match.secondTeamPlayers = secondTeamPlayers.map((player: any, index: number) => {
+        const updatedPlayer = {
+          playerId: player.playerId || match.secondTeamPlayers[index].playerId,
+          playerName: player.playerName || match.secondTeamPlayers[index].playerName,
+          runs: player.runs !== undefined ? player.runs : match.secondTeamPlayers[index].runs,
+          wickets: player.wickets !== undefined ? player.wickets : match.secondTeamPlayers[index].wickets,
+        };
+
+        // Update player stats in Player Microservice
+        updatePlayerStats(updatedPlayer.playerId, updatedPlayer.runs, updatedPlayer.wickets);
+
+        return updatedPlayer;
+      });
     }
 
     // Save the updated match
