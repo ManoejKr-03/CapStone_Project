@@ -36,6 +36,7 @@ router.post('/teams/:teamId/registered-players/:action', processPlayerRequest);
 
 router.post('/register-team', registerTeamWithOrganizer);
 
+
 //http://localhost:5000/api/tournaments
 router.get('/tournaments', fetchTournamentsFromOrganizer);
 

@@ -40,7 +40,7 @@ const updatePlayerStats = async (playerId: string, runs: number, wickets: number
   try {
 
     //change the localhost address for player 
-    const response = await axios.put(`http://localhost:5000/api/players/${playerId}/stats`, { runs, wickets });
+    const response = await axios.put(`http://localhost:3001/api/players/${playerId}/stats`, { runs, wickets });
     return response.data;
   } catch (error) {
     console.error(`Error updating stats for player ${playerId}`, error);
