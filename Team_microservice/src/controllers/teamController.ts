@@ -1,5 +1,6 @@
 // controllers/teamController.ts
 import { Request, Response } from 'express';
+import axios from 'axios';
 import {
   getTeamStatistics,
   registerPlayer,
@@ -35,6 +36,29 @@ export const fetchTeamDetails = async (req: Request, res: Response): Promise<voi
   }
 };
 
+
+//send the team details to tournament microservice
+export const registerTeamWithOrganizer = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { teamId, tournamentId } = req.body;
+
+    // Forward the registration request to the organizer microservice
+    const response = await axios.post(`${process.env.ORGANIZER_SERVICE_URL}/api/registrations`, {
+      teamId,
+      tournamentId
+    });
+
+    // Send the response back to the client
+    res.status(response.status).json(response.data);
+  } catch (error: any) {
+    res.status(error.response?.status || 500).json({
+      message: 'Error registering team with organizer',
+      error: error.response?.data || error.message,
+    });
+  }
+};
+
+
 //sending the team details to the tournament microservice when click the button in tournament (navigation )
 export const sendTeamDetailsToOrganizer = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -66,6 +90,7 @@ export const fetchTeamStatistics = async (req: Request, res: Response): Promise<
     res.status(500).json({ message: 'Error fetching team statistics', error });
   }
 };
+
 
 // need to pass in player microservice to register in this teams
 export const addRegisteredPlayer = async (req: Request, res: Response): Promise<void> => {

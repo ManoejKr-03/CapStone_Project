@@ -8,6 +8,7 @@ import {
   createNewTeam,
   fetchTeamDetails,
   sendTeamDetailsToOrganizer,
+  registerTeamWithOrganizer,
 } from '../controllers/teamController';
 
 const router = Router();
@@ -18,7 +19,7 @@ router.post('/teams', createNewTeam);
 // Fetch team details by team ID
 router.get('/teams/:teamId', fetchTeamDetails);
 
-router.post('/teams/:teamId/send-to-organizer', sendTeamDetailsToOrganizer);
+//router.post('/teams/:teamId/send-to-organizer', sendTeamDetailsToOrganizer);
 
 // Team statistics endpoint
 router.get('/teams/:teamId/statistics', fetchTeamStatistics);
@@ -31,5 +32,7 @@ router.get('/teams/db/registered-players', getRegisteredPlayers);
 
 // Accept or reject a registered player
 router.post('/teams/:teamId/registered-players/:action', processPlayerRequest);
+
+router.post('/register-team', registerTeamWithOrganizer);
 
 export default router;
