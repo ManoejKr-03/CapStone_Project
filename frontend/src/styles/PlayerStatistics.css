@@ -1,0 +1,47 @@
+/* src/styles/PlayerStatistics.css */
+
+.statistics-section {
+    background-color: white;
+    padding: 3rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    margin: 2rem auto;
+    text-align: center;
+  }
+  
+  .statistics-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #2a2e43;
+  }
+  
+  .cards-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem; /* Space between cards */
+  }
+  
+  .stat-card {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 1.5rem;
+    flex: 1; /* Allow cards to grow equally */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-5px); /* Slight lift effect on hover */
+  }
+  
+  .stat-card h3 {
+    margin-bottom: 1rem;
+    color: #2a2e43;
+  }
+  
+  .stat-card p {
+    margin: 0.5rem 0;
+    color: #555;
+  }
+  
