@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Tournament from '../models/Tournament';
+import axios from 'axios';
 
 
 // Create a new tournament
@@ -23,3 +24,6 @@ export const getTournaments = async (req: Request, res: Response): Promise<void>
     res.status(500).json({ message: 'Error fetching tournaments', error });
   }
 };
+
+
+ 

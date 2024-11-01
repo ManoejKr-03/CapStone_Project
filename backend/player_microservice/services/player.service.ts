@@ -8,6 +8,7 @@ export const createPlayer = async (playerData: Omit<PlayerInterface, '_id' | 'cr
     return player;
 };
 
+
 // Get all players
 export const getPlayers = async (): Promise<PlayerInterface[]> => {
     return await Player.find();

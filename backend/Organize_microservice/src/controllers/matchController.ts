@@ -14,6 +14,7 @@ export const createMatch = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
+
 // Update match scores
 // export const updateMatchScores = async (req: Request, res: Response): Promise<void> => {
 //   try {
@@ -35,9 +36,13 @@ export const createMatch = async (req: Request, res: Response): Promise<void> =>
 //   }
  
 // Function to update player stats in the Player Microservice
+
 const updatePlayerStats = async (playerId: string, runs: number, wickets: number) => {
   try {
-    const response = await axios.put(`http://localhost:5000/api/players/${playerId}/stats`, { runs, wickets });
+
+    //change the localhost address for player 
+    const response = await axios.put(`http://localhost:5001/api/players/${playerId}/stats`, { runs, wickets });
+                                   // http://localhost:5001/api/players/P12345/stats
     return response.data;
   } catch (error) {
     console.error(`Error updating stats for player ${playerId}`, error);
