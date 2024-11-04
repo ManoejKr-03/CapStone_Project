@@ -93,6 +93,7 @@ export const getTournaments = async (req: Request, res: Response): Promise<void>
  
 export const fetchTeamsForTournament = async (req: Request, res: Response) => {
   const { tournamentId } = req.params;
+  console.log(tournamentId);
 
   try {
     // Step 1: Directly fetch the tournament details from the database
@@ -104,7 +105,9 @@ export const fetchTeamsForTournament = async (req: Request, res: Response) => {
     }
     ///teams/:teamId
     // Step 2: Fetch each team's details concurrently using Promise.all
+    console.log(tournament.teams.map((teamId: string) => teamId));
     const teamDetailsPromises = tournament.teams.map((teamId: string) => 
+    
       axios.get(`http://localhost:5000/api/teams/${teamId}`).then(response => response.data)
     );
 
