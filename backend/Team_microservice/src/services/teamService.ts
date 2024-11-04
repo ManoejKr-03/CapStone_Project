@@ -1,11 +1,12 @@
 // services/teamService.ts
 import Team, { TeamDocument } from '../models/Team';
-import RegisteredPlayer, { RegisteredPlayerDocument } from '../models/RegisteredPlayer';
+import RegisteredPlayer, { IRegisteredPlayer } from '../models/RegisteredPlayer';
 import axios from 'axios';
 
 
 //api for creating a new team 
 export const createTeam = async (teamData: TeamDocument): Promise<TeamDocument> => {
+  console.log('Creating a new team:', teamData);
   const newTeam = new Team(teamData);
   return newTeam.save();
 };
@@ -43,7 +44,7 @@ export const getTeamStatistics = async (teamId: string): Promise<TeamDocument | 
 
 
 // Register a player for squad management
-export const registerPlayer = async (playerData: RegisteredPlayerDocument): Promise<RegisteredPlayerDocument> => {
+export const registerPlayer = async (playerData: IRegisteredPlayer): Promise<IRegisteredPlayer> => {
   const registeredPlayer = new RegisteredPlayer(playerData);
   return registeredPlayer.save();
 };
@@ -58,15 +59,15 @@ export const listRegisteredPlayers = async (): Promise<any[]> => {
 };
 
 // Accept or reject a registered player
-export const handlePlayerAcceptance = async (playerId: string, teamId: string, action: 'accept' | 'reject') => {
-  const player = await RegisteredPlayer.findOne({ playerId, teamId });
-  if (!player) throw new Error('Player not found in registration list');
+// export const handlePlayerAcceptance = async (playerId: string, teamId: string, action: 'accept' | 'reject') => {
+//   const player = await RegisteredPlayer.findOne({ playerId, teamId });
+//   if (!player) throw new Error('Player not found in registration list');
 
-  if (action === 'accept') {
-    await Team.updateOne(
-      { _id: teamId },
-      { $push: { players: { playerId: player.playerId, playerName: player.playerName, role: player.role } } }
-    );
-  }
-  await RegisteredPlayer.deleteOne({ playerId, teamId });
-};
+//   if (action === 'accept') {
+//     await Team.updateOne(
+//       { _id: teamId },
+//       { $push: { players: { playerId: player.playerId, playerName: player.playerName, role: player.role } } }
+//     );
+//   }
+//   await RegisteredPlayer.deleteOne({ playerId, teamId });
+// };

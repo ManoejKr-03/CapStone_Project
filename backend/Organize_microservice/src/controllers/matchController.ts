@@ -4,17 +4,17 @@ import axios from 'axios';
 
 //another navigation bar for the match creation , update 
 // Create a new match
-export const createMatch = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const match = new Match(req.body);
-    await match.save();
-    res.status(201).json(match);
-  } catch (error) {
-    res.status(500).json({ message: 'Error creating match', error });
-  }
-};
+// export const createMatch = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const match = new Match(req.body);
+//     await match.save();
+//     res.status(201).json(match);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error creating match', error });
+//   }
+// };
 
-
+// creating match ->update match ( searching the scorecard)
 // Update match scores
 // export const updateMatchScores = async (req: Request, res: Response): Promise<void> => {
 //   try {
@@ -39,10 +39,12 @@ export const createMatch = async (req: Request, res: Response): Promise<void> =>
 
 const updatePlayerStats = async (playerId: string, runs: number, wickets: number) => {
   try {
-
+    console.log(playerId);
+    console.log(runs);
+    console.log(wickets);
     //change the localhost address for player 
     const response = await axios.put(`http://localhost:5001/api/players/${playerId}/stats`, { runs, wickets });
-                                   // http://localhost:5001/api/players/P12345/stats
+                                  
     return response.data;
   } catch (error) {
     console.error(`Error updating stats for player ${playerId}`, error);
@@ -144,5 +146,79 @@ export const getMatchDetails = async (req: Request, res: Response): Promise<void
     res.status(200).json(match);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching match details', error });
+  }
+};
+const TEAM_MICROSERVICE_URL = 'http://localhost:3000/api'; // Replace with actual URL
+const PLAYER_MICROSERVICE_URL = 'http://localhost:5001/api'
+
+export const createMatch = async (req: Request, res: Response): Promise<void> => {
+  const { matchId, matchNumber, matchType, tournamentId, firstTeamId, secondTeamId } = req.body;
+
+  try {
+    // Get player IDs for the first team /:teamId/players
+    const firstTeamResponse = await axios.get(`${TEAM_MICROSERVICE_URL}/${firstTeamId}/players`);
+    const firstTeamPlayerIds = firstTeamResponse.data.players;
+
+    // Get player IDs for the second team
+    const secondTeamResponse = await axios.get(`${TEAM_MICROSERVICE_URL}/${secondTeamId}/players`);
+    const secondTeamPlayerIds = secondTeamResponse.data.players;
+
+    // Fetch player details for the first team /player/:player_id
+    const firstTeamPlayers = await Promise.all(
+      firstTeamPlayerIds.map(async (playerId: string) => {
+        const playerResponse = await axios.get(`${PLAYER_MICROSERVICE_URL}/player/${playerId}`);
+        return {
+          playerId: playerResponse.data.playerId,
+          playerName: playerResponse.data.playerName,
+          runs: 0,
+          wickets: 0,
+          balls: 0,
+          fours: 0,
+          sixes: 0,
+          catches: 0,
+          strikeRate: 0,
+         // status: 'ongoing',
+        };
+      })
+    );
+
+    // Fetch player details for the second team
+    const secondTeamPlayers = await Promise.all(
+      secondTeamPlayerIds.map(async (playerId: string) => {
+        const playerResponse = await axios.get(`${PLAYER_MICROSERVICE_URL}/${playerId}`);
+        return {
+          playerId: playerResponse.data.playerId,
+          playerName: playerResponse.data.playerName,
+          runs: 0,
+          wickets: 0,
+          balls: 0,
+          fours: 0,
+          sixes: 0,
+          catches: 0,
+          strikeRate: 0,
+          //status: 'completed',
+        };
+      })
+    );
+
+    // Create the match document
+    const match = new Match({
+      matchId,
+      matchNumber,
+      matchType,
+      tournamentId,
+      firstTeamId,
+      secondTeamId,
+      firstTeamPlayers,
+      secondTeamPlayers,
+    });
+
+    // Save the match
+    await match.save();
+
+    res.status(201).json({ message: 'Match created successfully', match });
+  } catch (error) {
+    console.error('Error creating match:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };

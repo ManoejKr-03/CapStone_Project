@@ -5,17 +5,20 @@ import {
   getTeamStatistics,
   registerPlayer,
   listRegisteredPlayers,
-  handlePlayerAcceptance,
+  
   createTeam,
  // getTeamDetails,
-  getTeamById,
+  // getTeamById,
   sendTeamToOrganizer,
 } from '../services/teamService';
+import Team from '../models/Team';
+import RegisteredPlayer from '../models/RegisteredPlayer';
 
 //creating the team route handlers
 export const createNewTeam = async (req: Request, res: Response): Promise<void> => {
   try {
     const newTeam = await createTeam(req.body);
+    console.log('Team created successfully:', newTeam);
     res.status(201).json(newTeam);
   } catch (error) {
     res.status(500).json({ message: 'Error creating team', error });
@@ -23,18 +26,18 @@ export const createNewTeam = async (req: Request, res: Response): Promise<void> 
 };
 
 //fetching the team details by team_id from the database
-export const fetchTeamDetails = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const team = await getTeamById(req.params.teamId);
-    if (team) {
-      res.status(200).json(team);
-    } else {
-      res.status(404).json({ message: 'Team not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching team details', error });
-  }
-};
+// export const fetchTeamDetails = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const team = await getTeamById(req.params.teamId);
+//     if (team) {
+//       res.status(200).json(team);
+//     } else {
+//       res.status(404).json({ message: 'Team not found' });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error fetching team details', error });
+//   }
+// };
 
 
 //send the team details to tournament microservice
@@ -61,27 +64,27 @@ export const registerTeamWithOrganizer = async (req: Request, res: Response): Pr
 
 
 //sending the team details to the tournament microservice when click the button in tournament (navigation )
-export const sendTeamDetailsToOrganizer = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { teamId } = req.params; // Get the team ID from request parameters
+// export const sendTeamDetailsToOrganizer = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const { teamId } = req.params; // Get the team ID from request parameters
 
-    // Fetch the team details
-    const team = await getTeamById(teamId);
-    if (!team) {
-      res.status(404).json({ message: 'Team not found' });
-      return; // Explicitly return to avoid continuing execution
-    }
+//     // Fetch the team details
+//     const team = await getTeamById(teamId);
+//     if (!team) {
+//       res.status(404).json({ message: 'Team not found' });
+//       return; // Explicitly return to avoid continuing execution
+//     }
 
-    // Send the team details to the Organizer microservice
-    await sendTeamToOrganizer(team);
+//     // Send the team details to the Organizer microservice
+//     await sendTeamToOrganizer(team);
 
-    // Send success response
-    res.status(200).json({ message: 'Team details sent to Organizer' });
-  } catch (error) {
-    // Send error response in case of failure
-    res.status(500).json({ message: 'Error sending team details to Organizer', error });
-  }
-};
+//     // Send success response
+//     res.status(200).json({ message: 'Team details sent to Organizer' });
+//   } catch (error) {
+//     // Send error response in case of failure
+//     res.status(500).json({ message: 'Error sending team details to Organizer', error });
+//   }
+// };
 
 export const fetchTeamStatistics = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -113,17 +116,17 @@ export const getRegisteredPlayers = async (req: Request, res: Response): Promise
 };
 
 //like button accept or reject in front dependices on front end [returned meesage(String)]
-export const processPlayerRequest = async (req: Request, res: Response): Promise<void> => {
-  const { playerId, teamId } = req.body;
-  const action = req.params.action as 'accept' | 'reject';
+// export const processPlayerRequest = async (req: Request, res: Response): Promise<void> => {
+//   const { playerId, teamId } = req.body;
+//   const action = req.params.action as 'accept' | 'reject';
 
-  try {
-    await handlePlayerAcceptance(playerId, teamId, action);
-    res.status(200).json({ message: `Player ${action}ed successfully` });
-  } catch (error) {
-    res.status(500).json({ message: `Error processing player ${action}`, error });
-  }
-};
+//   try {
+//     await handlePlayerAcceptance(playerId, teamId, action);
+//     res.status(200).json({ message: `Player ${action}ed successfully` });
+//   } catch (error) {
+//     res.status(500).json({ message: `Error processing player ${action}`, error });
+//   }
+// };
 
 
 // Fetch all tournaments from the organizer microservice
@@ -141,3 +144,78 @@ export const fetchTournamentsFromOrganizer = async (req: Request, res: Response)
     });
   }
 };
+
+// this can we get accessed by tournament 
+export const getTeamById = async (req: Request, res: Response): Promise<void> => {
+  const { teamId } = req.params;
+
+  try {
+    // Fetch team details from the database
+    const team = await Team.findOne({ teamId });
+
+    if (!team) {
+
+      res.status(404).json({ message: 'Team not found' });
+      return;
+    }
+
+    // Respond with team details
+    res.status(200).json(team);
+  } catch (error) {
+    console.error('Error fetching team details:', error);
+    res.status(500).json({ message: 'Internal Server Error', error: (error as Error).message });
+  }
+};
+
+
+// getting playerid and teamid from player microservice
+export const registerPlayerdetails = async (req: Request, res: Response): Promise<void> => {
+  const { playerId, teamId } = req.body;
+
+  try {
+      // Check if this player is already registered for the team to avoid duplicates
+      const existingRegistration = await RegisteredPlayer.findOne({ playerId, teamId });
+      
+      if (existingRegistration) {
+          res.status(409).json({ message: 'Player is already registered for this team' });
+          return;
+      }
+
+      // Create a new registration record
+      const registeredPlayer = new RegisteredPlayer({ playerId, teamId });
+      await registeredPlayer.save();
+
+      res.status(201).json({ message: 'Player registered to team successfully', registeredPlayer });
+  } catch (error) {
+      console.error('Error registering player:', error);
+      res.status(500).json({ message: 'Error registering player to team', error: (error as Error).message });
+  }
+};
+
+
+//get  the players id from teamid
+
+export const getPlayersByTeamId = async (req: Request, res: Response): Promise<void> => {
+  const { teamId } = req.params;
+
+  try {
+    const team = await Team.findOne({ teamId });
+    
+    if (!team) {
+      // If no team is found, send a 404 response and return early
+       res.status(404).json({ message: 'Team not found' });
+       return;
+    }
+
+    // Only reaches this line if `team` is not null
+    res.status(200).json({ players: team.players });
+  } catch (error) {
+    console.error('Error fetching players:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
+//
+

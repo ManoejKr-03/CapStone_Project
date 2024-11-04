@@ -11,7 +11,9 @@ export interface Tournament extends Document {
   organizerName: string;
   venue: string;
   winnerTeam: string;
-  teams: string[]; // List of team IDs
+  noOfTeams:number;
+  status: string; // status:completed, upcoming, ongoing
+  teams: string[]; // List of team IDs     //status:completed, upcoming , ongoing
 }
 
 const tournamentSchema: Schema = new Schema({

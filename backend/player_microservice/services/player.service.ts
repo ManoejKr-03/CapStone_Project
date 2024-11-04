@@ -34,39 +34,20 @@ export const deletePlayer = async (id: string): Promise<void> => {
     await Player.findByIdAndDelete(id);
 };
 
-export const registerPlayerToTeam = async (
-    player_id: string
-): Promise<any> => {
+
+export const registerPlayerToTeam = async (playerId: string, teamId: string) => {
+    console.log(playerId);
+    console.log(teamId);
     try {
-        //console.log(player_id);
-        // Fetch the player details using the playerId
-        const player = await Player.findOne({ player_id: player_id });
-        //console.log('Player fetched:', player);
 
-        if (!player) {
-            throw new Error('Player not found');
-        }
-
-        // Prepare the payload with all necessary player details
-        const playerDetails = {
-            playerId: player.player_id,  // Unique player ID
-            playerName: player.name,            // Player's name
-            age: player.age,              // Player's age
-            role: player.role,    
-            teamId: player.teamId,          // Player's team ID
-        };
-       // console.log(playerDetails);
-
-        // Send the registration request to the Team microservice
-        //console.log('posting');
-        const response = await axios.post(`${process.env.TEAM_SERVICE_URL}/teams/register-player`, playerDetails);
-
-        return response.data; // Return the response from the Team service
-    } catch (error: unknown) { // Specify the type of error
-        if (error instanceof Error) {
-            throw new Error('Failed to register player to team: ' + error.message);
-        } else {
-            throw new Error('Failed to register player to team: Unknown error occurred.');
-        }
+        // Send the playerId and teamId to the Team microservice /teams/register-player /teams/register-player
+        const response = await axios.post('http://localhost:5000/api/teams/register-player', {
+            playerId,
+            teamId,
+        });
+        
+        return response.data; // Return response from Team microservice
+    } catch (error) {
+        throw new Error('Error registering player to team');
     }
 };

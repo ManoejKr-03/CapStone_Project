@@ -12,6 +12,27 @@ export const createPlayer = async (req: Request, res: Response): Promise<void> =
         res.status(500).json({ message: 'Error creating player' });
     }
 };
+export const getPlayerById = async (req: Request, res: Response): Promise<void> => {
+    const { playerId } = req.params;
+  
+    try {
+      const player = await Player.findOne({ playerId });
+  
+      if (!player) {
+        res.status(404).json({ message: 'Player not found' });
+        return;
+      }
+  
+      // Return playerId and playerName
+      res.status(200).json({
+        playerId: player.player_id,
+        playerName: player.name,
+      });
+    } catch (error) {
+      console.error('Error fetching player:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
 
 // Get all players
 export const getPlayers = async (req: Request, res: Response): Promise<void> => {
@@ -65,18 +86,21 @@ export const deletePlayer = async (req: Request, res: Response): Promise<void> =
 };
 
 
+
 export const registerPlayerToTeam = async (req: Request, res: Response): Promise<void> => {
-    const { playerId} = req.body; // Extract playerId and teamId from the request body
-    //console.log(playerId);
+    const { playerId, teamId } = req.params; // Extract playerId and teamId from the URL
 
     try {
-        // Call the PlayerService to register the player with the Team microservice
-        const result = await PlayerService.registerPlayerToTeam(playerId);
+        // Send playerId and teamId to the Team microservice
+        const result = await PlayerService.registerPlayerToTeam(playerId, teamId);
         res.status(200).json(result); // Send the successful response back to the client
     } catch (error) {
         res.status(500).json({ message: 'Error registering player to team', error });
-    }
+    } 
 };
+
+
+
 
 
 
@@ -104,6 +128,7 @@ export const updatePlayerStats = async (req: Request, res: Response): Promise<vo
             player.battingStats = {
                 ...player.battingStats,
                 runs: (player.battingStats?.runs || 0) + runs,
+                matchesPlayed: (player.battingStats?.matchesPlayed || 0) + 1,
             };
         }
         
@@ -111,6 +136,7 @@ export const updatePlayerStats = async (req: Request, res: Response): Promise<vo
             player.bowlingStats = {
                 ...player.bowlingStats,
                 wickets: (player.bowlingStats?.wickets || 0) + wickets,
+                matchesPlayed: (player.bowlingStats?.matchesPlayed || 0) + 1,
             };
         }
 
@@ -120,3 +146,31 @@ export const updatePlayerStats = async (req: Request, res: Response): Promise<vo
         res.status(500).json({ message: 'Error updating player stats', error });
     }
 };
+
+
+
+export const getPlayerIdplayernamefromplayerid = async (req: Request, res: Response): Promise<void> => {
+    const { playerId } = req.params;
+  
+    try {
+      const player = await Player.findOne({ playerId });
+  
+      if (!player) {
+        res.status(404).json({ message: 'Player not found' });
+        return;
+      }
+  
+      // Return playerId and playerName
+      res.status(200).json({
+        playerId: player.player_id,
+        playerName: player.name,
+      });
+    } catch (error) {
+      console.error('Error fetching player:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+
+// team -> players 
+// team -> matches

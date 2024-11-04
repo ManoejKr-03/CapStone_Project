@@ -1,21 +1,37 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-interface Player extends Document {
+export interface Player extends Document {
   playerId: string;
   playerName: string;
   runs: number;
   wickets: number;
+  balls: number;
+  fours: number;
+  sixes: number;
+  catches: number;
+  strikeRate: number;
+ // status: string; // e.g., "completed"
 }
+
 const playerSchema: Schema = new Schema({
   playerId: { type: String, required: true },
   playerName: { type: String, required: true },
   runs: { type: Number, default: 0 },
   wickets: { type: Number, default: 0 },
+  balls: { type: Number, default: 0 },
+  fours: { type: Number, default: 0 },
+  sixes: { type: Number, default: 0 },
+  catches: { type: Number, default: 0 },
+  strikeRate: { type: Number, default: 0 },
+ // status: { type: String, enum: ['completed', 'ongoing'], default: 'completed' },
+
 });
 
 
 export interface Match extends Document {
   matchId: string;
+  matchNumber:string; // added
+  matchType:String;  // a -group, semi final, final 
   tournamentId: string;
   firstTeamId: string;
   secondTeamId: string;
@@ -24,12 +40,15 @@ export interface Match extends Document {
   firstTeamWickets: number;
   secondTeamWickets: number;
   firstTeamPlayers: Player[];
-  secondTeamPlayers: Player[];               
+  secondTeamPlayers: Player[];    // STATUS:COMPLETED;    
+  status:string;        
   winner: string;
 }
 
 const matchSchema: Schema = new Schema({
   matchId: { type: String, required: true },
+  matchNumber: { type: String, required: true },
+  matchType: { type: String, required: true, enum: ['group', 'semi-final', 'final'] },
   tournamentId: { type: String, required: true },
   firstTeamId: { type: String, required: true },
   secondTeamId: { type: String, required: true },
@@ -37,9 +56,12 @@ const matchSchema: Schema = new Schema({
   secondTeamScore: { type: Number, default: 0 },
   firstTeamWickets: { type: Number, default: 0 },
   secondTeamWickets: { type: Number, default: 0 },
-  firstTeamPlayers: { type: [playerSchema], default: [] },
-  secondTeamPlayers: { type: [playerSchema], default: [] },
+  firstTeamPlayers: { type: [Schema.Types.Mixed], default: [] },
+  secondTeamPlayers: { type: [Schema.Types.Mixed], default: [] },
+  status: { type: String, enum: ['upcoming', 'ongoing', 'completed'], default: 'upcoming' },
   winner: { type: String, default: null },
 });
+
+ 
 
 export default mongoose.model<Match>('Match', matchSchema);
