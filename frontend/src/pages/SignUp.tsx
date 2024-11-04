@@ -27,8 +27,9 @@ const SignUp: React.FC = () => {
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-
+  
     if (!name) newErrors.name = 'Name is required.';
+    
     if (!username) {
       newErrors.username = 'Username is required.';
     } else if (/^\d+$/.test(username)) {
@@ -36,23 +37,28 @@ const SignUp: React.FC = () => {
     } else if (!/^[a-zA-Z0-9]{3,15}$/.test(username)) {
       newErrors.username = 'Username must be 3-15 characters and contain only letters and numbers.';
     }
+  
     if (!email) {
       newErrors.email = 'Email is required.';
     } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
       newErrors.email = 'Invalid email format.';
     }
+  
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[a-zA-Z]).{8,}$/;
     if (!password) {
       newErrors.password = 'Password is required.';
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters.';
+    } else if (!passwordRegex.test(password)) {
+      newErrors.password = 'Password must be at least 8 characters, with one uppercase letter and one symbol.';
     }
+  
     if (!confirmPassword) {
       newErrors.confirmPassword = 'Please confirm your password.';
     } else if (password !== confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match.';
     }
+  
     if (!role) newErrors.role = 'Please select a role.';
-
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };

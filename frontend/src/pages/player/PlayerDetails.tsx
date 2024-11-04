@@ -26,24 +26,55 @@ interface Player {
 
 const PlayerDetails: React.FC = () => {
   const [player, setPlayer] = useState<Player | null>(null);
+  const [playerId, setPlayerId] = useState<string | null>(null);
   const user_id = localStorage.getItem('user_id');
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    const fetchPlayerDetails = async () => {
+    // First, fetch the player_id based on user_id
+    const fetchPlayerId = async () => {
       try {
-        const response = await axios.get<Player>(`http://localhost:7000/api/players/player-id/${user_id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.post<{ player_id: string }>(
+          `http://localhost:7000/api/players/user_id/${user_id}`,
+          {}, // Empty request body for a POST request
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setPlayerId(response.data.player_id);
+      } catch (error) {
+        console.error('Error fetching player ID:', error);
+      }
+    };
+
+    // Fetch player details using player_id
+    const fetchPlayerDetails = async (id: string) => {
+      try {
+        const response = await axios.get<Player>(
+          `http://localhost:7000/api/players/player-id/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setPlayer(response.data);
       } catch (error) {
         console.error('Error fetching player details:', error);
       }
     };
-    fetchPlayerDetails();
-  }, [user_id, token]);
+
+    // Fetch player ID, then fetch player details if ID is available
+    if (user_id) {
+      fetchPlayerId().then(() => {
+        if (playerId) {
+          fetchPlayerDetails(playerId);
+        }
+      });
+    }
+  }, [user_id, token, playerId]);
 
   if (!player) {
     return <p>Loading player details...</p>;

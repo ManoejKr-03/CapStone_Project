@@ -51,3 +51,19 @@ export const registerPlayerToTeam = async (playerId: string, teamId: string) => 
         throw new Error('Error registering player to team');
     }
 };
+
+export const getPlayerIdFromUserId=async (userId:string) => {
+    try {
+      // Find the player document that matches the user ID
+      const player = await Player.findOne({ user_id: userId });
+      
+      // If no player is found, return null
+      if (!player) return null;
+      
+      // Return the player_id from the player document
+      return player.player_id;
+    } catch (error) {
+      console.error('Error in PlayerService.getPlayerIdFromUserId:', error);
+      throw error;
+    }
+  };
