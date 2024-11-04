@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model';
 
+
 // Add a new user
 export const addUser = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -68,16 +69,43 @@ export const getAllUsers = async (req: Request, res: Response): Promise<void> =>
 };
 
 
+export const patchUserProfileCompletion = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.params.id;
+  
+    try {
+      const updatedUser = await userService.updateUser(req.params.id, { playerProfileCompleted: true });
+      if (!updatedUser) {
+         res.status(404).json({ message: 'User not found' });
+         return
+      }
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating user profile completion', error });
+    }
+  };
+
+
+
+
+
 // controllers/authController.ts
 
 
 export const register = async (req: Request, res: Response) => {
+    
     const { u_id,username,name, email, password, role } = req.body;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      res.status(400).json({ message: 'User already exists with this email.' });
+      return;
+    }
+    else
+    {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ u_id,username, name,email, password: hashedPassword, role });
     await newUser.save();
     res.status(201).json({ message: 'User registered successfully' });
-    return ;
+    return ;}
 };
 
 export const login = async (req: Request, res: Response) => {
@@ -88,7 +116,7 @@ export const login = async (req: Request, res: Response) => {
          return;
     }
     const token = jwt.sign({ id: user.u_id, role: user.role }, "petdryfuygiuhi" as string, { expiresIn: '1h' });
-    res.json({ token });
+    res.json({ token,user });
     return;
 };
 

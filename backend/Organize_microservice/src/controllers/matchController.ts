@@ -283,7 +283,8 @@ export const updatePlayerStats = async (req: Request, res: Response): Promise<vo
   try {
     console.log(matchId,seriesId);
     // Step 1: Find the match by matchId and seriesId
-    const match = await Match.findOne({ matchId, seriesId });
+  //  const match = await Match.findOne({ matchId, seriesId });
+  const match = await Match.findOne({ matchId: matchId, tournamentId: seriesId });
     console.log("match value : " + match);
     if (!match) {
       res.status(404).json({ message: 'Match not found' });
@@ -302,7 +303,7 @@ export const updatePlayerStats = async (req: Request, res: Response): Promise<vo
 
     // Step 3: Update player stats in the Player microservice http://localhost:5001/api/player/:playerId/stats'
     
-    await axios.put(`${PLAYER_MICROSERVICE_URL}/player/${playerId}/stats`, {
+    await axios.put(`${PLAYER_MICROSERVICE_URL}/players/${playerId}/stats`, {
       runs: runs !== undefined ? runs : player.runs,
       wickets: wickets !== undefined ? wickets : player.wickets,
       balls: balls !== undefined ? balls : player.balls,

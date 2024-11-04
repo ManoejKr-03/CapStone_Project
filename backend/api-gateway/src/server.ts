@@ -3,9 +3,11 @@ import express from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import dotenv from 'dotenv';
 import { authenticateJWT } from './middleware/authenticate';
+import cors from 'cors';
 
 dotenv.config();
 const app = express();
+app.use(cors());
 
 //Auth Service Proxy
 app.use('/api/auth', createProxyMiddleware({
@@ -27,11 +29,11 @@ app.use('/api/matches',authenticateJWT, createProxyMiddleware({
     changeOrigin: true
 }));
 app.use('/api/organizers',authenticateJWT, createProxyMiddleware({
-    target: 'http://localhost:3000',
+    target: 'http://localhost:4000',
     changeOrigin: true
 }));
 app.use('/api/tournaments',authenticateJWT, createProxyMiddleware({
-    target: 'http://localhost:6000',
+    target: 'http://localhost:4000',
     changeOrigin: true
 }));
 app.listen(7000, () => {

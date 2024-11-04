@@ -7,10 +7,8 @@ const RoleSelection: React.FC = () => {
   const navigate = useNavigate();
 
   const handleRoleSelect = (role: string) => {
-    // Here you can set the role in your application state or context
-    console.log(`Selected role: ${role}`);
-    // Redirect to the appropriate dashboard or page based on role
-    navigate(`/player-dashboard`);
+    // Redirect to the Sign Up page with the selected role as a URL parameter
+    navigate(`/signup?role=${encodeURIComponent(role)}`);
   };
 
   return (

@@ -3,39 +3,69 @@ import React from 'react';
 import { Card, CardContent, Typography, Grid, Avatar, Divider, List, ListItem, ListItemText } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
+// Import the Lato font from Google Fonts in your CSS or HTML
+// Alternatively, you can add this directly to the HTML <head>:
+// <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
 const useStyles = makeStyles({
   root: {
-    padding: '2rem',
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    backgroundColor: '#fff',
+    padding: '1.5rem',
+    fontFamily: '"Lato", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+    //backgroundColor: '#eef2f6',
+    backgroundColor: '#ffffff',
+    minHeight: '100vh',
   },
   card: {
-    marginBottom: '1.5rem',
-    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-    borderRadius: '8px',
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+    borderRadius: '0px',  // Sharp edges
+    padding: '1rem',  // Reduced padding
+    textAlign: 'center',
+    backgroundColor: '#ffffff',
+    transition: 'transform 0.2s',
+    '&:hover': {
+      transform: 'scale(1.01)',
+    },
+  },
+  welcomeCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    color: '#00529B',
+    padding: '1.5rem',
+    borderRadius: '0px',  // Sharp edges
+    boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
   },
   title: {
-    fontSize: '1.2rem',
-    fontWeight: 'bold',
-    color: '#ffb300', // Yellow color
+    fontSize: '1.6rem',
+    fontWeight: 700,
+    color: '#2e3b4e',
   },
   subtitle: {
-    color: '#5f6368',
+    color: '#b0bec5',
   },
   avatar: {
-    width: 70,
-    height: 70,
-    backgroundColor: '#ffb300', // Yellow color
-    fontSize: '2rem',
-    margin: 'auto',
+    width: 60,
+    height: 60,
+    backgroundColor: '#ffc107',
+    fontSize: '1.6rem',
+    marginBottom: '0.8rem',
   },
   sectionTitle: {
-    color: '#2a2e43',
+    fontFamily: '"Lato", sans-serif',
+    fontWeight: 500,
+    fontSize: '1.2rem',
+    color: '#2e3b4e',
     marginBottom: '0.5rem',
-    fontWeight: 'bold',
   },
   divider: {
-    margin: '1rem 0',
+    margin: '0.5rem 0',  // Reduced margin for compactness
+    backgroundColor: '#e0e0e0',
+  },
+  listText: {
+    color: '#37474f',
+    fontSize: '0.9rem',
+    fontFamily: '"Lato", "Segoe UI", sans-serif',
   },
 });
 
@@ -55,69 +85,90 @@ const PlayerHome: React.FC = () => {
 
   return (
     <div className={classes.root}>
-      <Card className={classes.card}>
-        <CardContent>
-          <Avatar className={classes.avatar}>P</Avatar>
-          <Typography variant="h4" align="center" className={classes.title}>
-            <br/>
-            Welcome Back, [Player Name]!
-            
-          </Typography>
-          {/* <Typography variant="subtitle1" align="center" className={classes.subtitle}>
-            Email: player@example.com
-          </Typography>
-          <Typography variant="subtitle2" align="center" className={classes.subtitle}>
-            Joined: [Joining Date]
-          </Typography> */}
-        </CardContent>
-      </Card>
+      <Grid container spacing={2}>
+        {/* Welcome Card */}
+        <Grid item xs={12} md={8}>
+          <Card className={`${classes.card} ${classes.welcomeCard}`}>
+            <Avatar className={classes.avatar}>P</Avatar>
+            <Typography variant="h4" className={classes.title}>
+              Welcome Back, [Player Name]!
+            </Typography>
+          </Card>
+        </Grid>
 
-      <Card className={classes.card}>
-        <CardContent>
-          <Typography variant="h5" className={classes.sectionTitle}>
-            Previous Matches
-          </Typography>
-          <Divider className={classes.divider} />
-          <List>
-            {previousMatches.map((match, index) => (
-              <ListItem key={index}>
-                <ListItemText
-                  primary={`Date: ${match.date}`}
-                  secondary={`Score: ${match.score} - Result: ${match.result}`}
-                />
-              </ListItem>
-            ))}
-          </List>
-        </CardContent>
-      </Card>
+        {/* Stats Overview Card */}
+        <Grid item xs={12} md={4}>
+          <Card className={classes.card}>
+            <Typography variant="h5" className={classes.sectionTitle}>
+              Stats Overview
+            </Typography>
+            <Typography variant="body1" className={classes.listText}>Total Matches: 25</Typography>
+            <Typography variant="body1" className={classes.listText}>Wins: 15</Typography>
+            <Typography variant="body1" className={classes.listText}>Losses: 10</Typography>
+          </Card>
+        </Grid>
 
-      <Card className={classes.card}>
-        <CardContent>
-          <Typography variant="h5" className={classes.sectionTitle}>
-            Upcoming Matches
-          </Typography>
-          <Divider className={classes.divider} />
-          <List>
-            {upcomingMatches.map((match, index) => (
-              <ListItem key={index}>
-                <ListItemText primary={`Date: ${match.date}`} secondary={`Against: ${match.team}`} />
-              </ListItem>
-            ))}
-          </List>
-        </CardContent>
-      </Card>
+        {/* Previous Matches Card */}
+        <Grid item xs={12} md={6}>
+          <Card className={classes.card}>
+            <CardContent>
+              <Typography variant="h5" className={classes.sectionTitle}>
+                Previous Matches
+              </Typography>
+              <Divider className={classes.divider} />
+              <List>
+                {previousMatches.map((match, index) => (
+                  <ListItem key={index}>
+                    <ListItemText
+                      primary={`Date: ${match.date}`}
+                      secondary={`Score: ${match.score} - Result: ${match.result}`}
+                      classes={{ primary: classes.listText, secondary: classes.listText }}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
 
-      <Card className={classes.card}>
-        <CardContent>
-          <Typography variant="h5" className={classes.sectionTitle}>
-            Team Details
-          </Typography>
-          <Divider className={classes.divider} />
-          <Typography variant="body1">Team Name: [Your Team]</Typography>
-          <Typography variant="body1">Role: [Player Position]</Typography>
-          <Typography variant="body1">Joined: [Team Join Date]</Typography>
-        </CardContent>
-      </Card>
+        {/* Upcoming Matches Card */}
+        <Grid item xs={12} md={6}>
+          <Card className={classes.card}>
+            <CardContent>
+              <Typography variant="h5" className={classes.sectionTitle}>
+                Upcoming Matches
+              </Typography>
+              <Divider className={classes.divider} />
+              <List>
+                {upcomingMatches.map((match, index) => (
+                  <ListItem key={index}>
+                    <ListItemText
+                      primary={`Date: ${match.date}`}
+                      secondary={`Against: ${match.team}`}
+                      classes={{ primary: classes.listText, secondary: classes.listText }}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Team Details Card */}
+        <Grid item xs={12}>
+          <Card className={classes.card}>
+            <CardContent>
+              <Typography variant="h5" className={classes.sectionTitle}>
+                Team Details
+              </Typography>
+              <Divider className={classes.divider} />
+              <Typography variant="body1" className={classes.listText}>Team Name: [Your Team]</Typography>
+              <Typography variant="body1" className={classes.listText}>Role: [Player Position]</Typography>
+              <Typography variant="body1" className={classes.listText}>Joined: [Team Join Date]</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
     </div>
   );
 };

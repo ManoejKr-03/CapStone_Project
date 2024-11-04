@@ -1,11 +1,13 @@
 import { Router } from 'express';
-import { addUser, getUserDetails, updateUser, deleteUser, getAllUsers,register, login , validateToken} from '../controllers/auth.controller';
+import { addUser, getUserDetails,patchUserProfileCompletion, updateUser, deleteUser, getAllUsers,register, login , validateToken} from '../controllers/auth.controller';
 
 const router = Router();
 
 router.post('/', addUser);
 router.get('/get/:id', getUserDetails);
 router.put('/get/:id', updateUser);
+router.patch('/get/:id', patchUserProfileCompletion);
+
 router.delete('/get/:id', deleteUser);
 router.get('/', getAllUsers);
 router.post('/register', register);
