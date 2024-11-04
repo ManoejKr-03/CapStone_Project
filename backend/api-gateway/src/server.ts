@@ -29,11 +29,11 @@ app.use('/api/matches',authenticateJWT, createProxyMiddleware({
     changeOrigin: true
 }));
 app.use('/api/organizers',authenticateJWT, createProxyMiddleware({
-    target: 'http://localhost:3000',
+    target: 'http://localhost:4000',
     changeOrigin: true
 }));
 app.use('/api/tournaments',authenticateJWT, createProxyMiddleware({
-    target: 'http://localhost:6000',
+    target: 'http://localhost:4000',
     changeOrigin: true
 }));
 app.listen(7000, () => {

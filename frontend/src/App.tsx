@@ -8,6 +8,7 @@ import RoleSelection from './components/RoleSelection';
 import PlayerDashboard from './pages/player/PlayerDashboard';
 import { AuthProvider } from './components/AuthContext';
 import PlayerProfile from './pages/player/PlayerProfile';
+import PlayerDetails from './pages/player/PlayerDetails';
 
 const App: React.FC = () => (
   <AuthProvider>
@@ -20,6 +21,7 @@ const App: React.FC = () => (
         <Route path="/select-role" element={<RoleSelection />} />
         <Route path="/player-dashboard/*" element={<PlayerDashboard />} />
         <Route path="/player-profile" element={<PlayerProfile/>}/>
+        {/* <Route path = "/palyer-details" element = {<PlayerDetails/>}/> */}
       </Routes>
     </Router>
   </AuthProvider>

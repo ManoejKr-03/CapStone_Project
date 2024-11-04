@@ -27,16 +27,16 @@ interface Player {
 const PlayerDetails: React.FC = () => {
   const [player, setPlayer] = useState<Player | null>(null);
   const [playerId, setPlayerId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const user_id = localStorage.getItem('user_id');
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    // First, fetch the player_id based on user_id
+    // Fetch the player_id based on user_id
     const fetchPlayerId = async () => {
       try {
-        const response = await axios.post<{ player_id: string }>(
+        const response = await axios.get<{ player_id: string }>(
           `http://localhost:7000/api/players/user_id/${user_id}`,
-          {}, // Empty request body for a POST request
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -46,6 +46,7 @@ const PlayerDetails: React.FC = () => {
         setPlayerId(response.data.player_id);
       } catch (error) {
         console.error('Error fetching player ID:', error);
+        setError('Player ID not found.');
       }
     };
 
@@ -53,7 +54,7 @@ const PlayerDetails: React.FC = () => {
     const fetchPlayerDetails = async (id: string) => {
       try {
         const response = await axios.get<Player>(
-          `http://localhost:7000/api/players/player-id/${id}`,
+          `http://localhost:7000/api/players/player_id/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -63,6 +64,7 @@ const PlayerDetails: React.FC = () => {
         setPlayer(response.data);
       } catch (error) {
         console.error('Error fetching player details:', error);
+        setError('Player details not found.');
       }
     };
 
@@ -76,6 +78,10 @@ const PlayerDetails: React.FC = () => {
     }
   }, [user_id, token, playerId]);
 
+  if (error) {
+    return <p className="error-message">{error}</p>;
+  }
+
   if (!player) {
     return <p>Loading player details...</p>;
   }
@@ -84,7 +90,7 @@ const PlayerDetails: React.FC = () => {
     <div className="player-details-container">
       <h2 className="player-heading">{player.name}'s Profile</h2>
       <div className="player-profile-section">
-        <img src={player.profilePic || 'default-profile.png'} alt="Profile" className="profile-image" />
+        <img src={player.profilePic} alt="Profile" className="profile-image" />
         <div className="player-info">
           <p><strong>Name:</strong> {player.name}</p>
           <p><strong>Age:</strong> {player.age}</p>

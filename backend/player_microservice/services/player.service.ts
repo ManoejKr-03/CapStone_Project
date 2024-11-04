@@ -52,10 +52,11 @@ export const registerPlayerToTeam = async (playerId: string, teamId: string) => 
     }
 };
 
-export const getPlayerIdFromUserId=async (userId:string) => {
+export const getPlayerIdFromUserId=async (user_id:string) => {
     try {
       // Find the player document that matches the user ID
-      const player = await Player.findOne({ user_id: userId });
+      
+      const player = await Player.findOne({ user_id: user_id });
       
       // If no player is found, return null
       if (!player) return null;

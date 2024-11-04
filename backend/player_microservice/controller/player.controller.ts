@@ -172,10 +172,10 @@ export const getPlayerIdplayernamefromplayerid = async (req: Request, res: Respo
 };
 
 export const getPlayerIdfromUserId = async (req:Request, res:Response): Promise<void> => {
-    const { userId } = req.params;
+    const { user_id } = req.params;
     
     try {
-      const playerId = await PlayerService.getPlayerIdFromUserId(userId);
+      const playerId = await PlayerService.getPlayerIdFromUserId(user_id);
       
       if (!playerId) {
          res.status(404).json({ message: 'Player not found for the given user ID.' });

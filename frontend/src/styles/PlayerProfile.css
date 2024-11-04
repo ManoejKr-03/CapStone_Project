@@ -91,7 +91,7 @@
 }
 
 .profile-image {
-  flex: 1; /* Allow the image to take available space */
+  /*flex: 1; /* Allow the image to take available space */
   display: flex;
   justify-content: center;
   align-items: center;
