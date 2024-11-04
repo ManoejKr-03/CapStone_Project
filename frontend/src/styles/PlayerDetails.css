@@ -1,0 +1,60 @@
+.player-details-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .player-heading {
+    text-align: center;
+    font-size: 2rem;
+    color: #4CAF50;
+  }
+  
+  .player-profile-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #4CAF50;
+  }
+  
+  .player-info {
+    font-size: 1.1rem;
+    color: #333;
+  }
+  
+  .stats-section {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 30px;
+  }
+  
+  .batting-stats, .bowling-stats {
+    background-color: #e8f5e9;
+    padding: 15px;
+    border-radius: 8px;
+    width: 45%;
+  }
+  
+  .batting-stats h3, .bowling-stats h3 {
+    color: #2e7d32;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .no-stats {
+    text-align: center;
+    font-size: 1rem;
+    color: #9e9e9e;
+  }
+  

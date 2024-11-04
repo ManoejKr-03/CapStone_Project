@@ -3,9 +3,11 @@ import express from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import dotenv from 'dotenv';
 import { authenticateJWT } from './middleware/authenticate';
+import cors from 'cors';
 
 dotenv.config();
 const app = express();
+app.use(cors());
 
 //Auth Service Proxy
 app.use('/api/auth', createProxyMiddleware({

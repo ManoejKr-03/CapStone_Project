@@ -14,6 +14,6 @@ app.use(cors()); // Enable CORS
 
 app.use(express.json());
 
-app.use('/api', playerRoutes);
+app.use('/', playerRoutes);
 
 export default app;

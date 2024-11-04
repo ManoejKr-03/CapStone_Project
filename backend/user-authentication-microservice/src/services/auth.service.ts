@@ -11,16 +11,18 @@ export const createUser = async (userData: Partial<IUser>): Promise<IUser> => {
 };
 
 export const getUserById = async (userId: string): Promise<IUser | null> => {
-  return await User.findById(userId);
+  return await User.findOne({ u_id: userId });
 };
 
 export const updateUser = async (userId: string, updateData: Partial<IUser>): Promise<IUser | null> => {
-  return await User.findByIdAndUpdate(userId, updateData, { new: true });
+  return await User.findOneAndUpdate({ u_id: userId }, updateData, { new: true });
 };
 
 export const deleteUser = async (userId: string): Promise<IUser | null> => {
-  return await User.findByIdAndDelete(userId);
+  return await User.findOneAndDelete({ u_id: userId });
 };
+
+
 
 export const getAllUsers = async (): Promise<IUser[]> => {
   return await User.find();

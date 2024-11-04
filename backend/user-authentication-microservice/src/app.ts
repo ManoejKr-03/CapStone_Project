@@ -3,6 +3,9 @@ import mongoose, { ConnectOptions } from 'mongoose';
 import cors from 'cors';
 import authRoutes from './routes/auth.routes';
 import { config } from './config/config';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 app.use(cors());

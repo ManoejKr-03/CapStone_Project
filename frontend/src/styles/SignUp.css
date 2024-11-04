@@ -5,7 +5,7 @@
   justify-content: center;
   min-height: 100vh;
   padding: 3rem;
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../assets/cricket-bg3.jpg') no-repeat center center;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../assets/cricket-bg3.jpg') no-repeat center center;
   background-size: cover;
   font-family: Arial, sans-serif;
   color: #fff;
@@ -13,26 +13,26 @@
 
 /* Container for the Signup Form */
 .signup-container {
-  background-color: rgba(255, 255, 255, 0.75); /* Increased transparency for modern look */
-  padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 2.5rem;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   text-align: center;
+  max-width: 450px;
   width: 100%;
-  max-width: 400px;
-  /* Removed border-radius for sharper edges */
+  border-radius: 8px;
 }
 
 /* Header and Subtitle */
 .signup-header {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.8rem;
   color: #007bff;
+  margin-bottom: 0.8rem;
 }
 
 .signup-subtitle {
   font-size: 1rem;
-  margin-bottom: 1.5rem;
-  color: #555;
+  margin-bottom: 1.8rem;
+  color: #333;
 }
 
 /* Form Styling */
@@ -44,23 +44,38 @@
 .signup label {
   margin: 0.5rem 0 0.3rem;
   font-weight: bold;
-  color: #333;
+  color: #444;
 }
 
-.signup input {
-  padding: 0.7rem;
+.signup input,
+.signup select {
+  padding: 0.75rem;
   margin-bottom: 1.2rem;
   border: 1px solid #ccc;
-  border-radius: 0; /* Removed rounding for sharper edges */
+  border-radius: 5px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   font-size: 1rem;
   color: #333;
 }
 
-.signup input:focus {
+.signup input:focus,
+.signup select:focus {
   border-color: #007bff;
   box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
   outline: none;
+}
+
+/* Error Styling */
+.input-error {
+  border-color: #ff4d4d;
+}
+
+.error-text {
+  color: #ff4d4d;
+  font-size: 0.9rem;
+  margin-top: -1rem;
+  margin-bottom: 1rem;
+  text-align: left;
 }
 
 /* Button Styling */
@@ -69,7 +84,7 @@
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 0; /* Removed rounding for sharper edges */
+  border-radius: 5px;
   font-weight: bold;
   font-size: 1rem;
   text-transform: uppercase;
@@ -106,7 +121,7 @@
 .signup-footer {
   margin-top: 1.5rem;
   font-size: 0.9rem;
-  color: #555;
+  color: #333;
 }
 
 .signup-footer a {
@@ -125,5 +140,6 @@
 @media (max-width: 768px) {
   .signup-container {
     width: 90%;
+    padding: 2rem;
   }
 }

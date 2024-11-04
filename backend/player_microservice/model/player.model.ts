@@ -31,6 +31,7 @@ const playerSchema = new Schema<PlayerInterface & Document>({
     battingStats: { // Optional batting statistics
         runs: Number,
         matchesPlayed: Number,
+        
     },
     bowlingStats: { // Optional bowling statistics
         wickets: Number,

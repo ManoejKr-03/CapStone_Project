@@ -12,12 +12,14 @@ export const authenticateJWT = async (req: Request, res: Response, next: NextFun
     }
 
     try {
+        
         // Send token to authentication service for validation
-        const response = await axios.get('http://localhost:9000/api/users/validateToken', {
+        const response = await axios.get('http://localhost:7000/api/auth/validateToken', {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
+        console.log(response.data);
 
         // If validation is successful, attach user info to request
         const user = response.data; // Adjust based on the response structure
