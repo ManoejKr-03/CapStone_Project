@@ -1,7 +1,16 @@
 import React from 'react';
 import '../styles/Login.css';
+import { useNavigate } from 'react-router-dom';
 
-const Login: React.FC = () => (
+const Login: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Perform login logic here, then redirect to role selection
+    navigate('/');
+  };
+  return(
   <div className="login">
     <div className="login-container">
       <h2 className="login-header">Welcome Back to Cricket Tournament Management</h2>
@@ -21,6 +30,6 @@ const Login: React.FC = () => (
       <p className="login-footer">Don’t have an account? <a href="/signup">Sign up here</a></p>
     </div>
   </div>
-);
+)};
 
 export default Login;

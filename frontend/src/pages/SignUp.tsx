@@ -21,7 +21,7 @@ const SignUp: React.FC = () => (
         <a href="/forgot-password" className="forgot-password">Forgot Password?</a>
       </form>
 
-      <p className="signup-footer">Already have an account? <a href="/login">Log in</a></p>
+      <p className="signup-footer">Already have an account? <a href="/select-role">Log in</a></p>
     </div>
   </div>
 );
