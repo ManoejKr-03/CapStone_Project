@@ -14,4 +14,7 @@ router.put('/players/:player_id/stats', PlayerController.updatePlayerStats);
  router.get('/player/:player_id',PlayerController.getPlayerIdplayernamefromplayerid);
 //http://localhost:3001/api/players/${playerId}/stats
 
+//this route is update the player information from organizer microservice when the match details get updated
+router.put('/player/:playerId/stats', PlayerController.updatePlayerStats);
+
 export default router;

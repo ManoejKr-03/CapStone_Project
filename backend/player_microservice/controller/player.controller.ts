@@ -12,6 +12,7 @@ export const createPlayer = async (req: Request, res: Response): Promise<void> =
         res.status(500).json({ message: 'Error creating player' });
     }
 };
+
 export const getPlayerById = async (req: Request, res: Response): Promise<void> => {
     const { playerId } = req.params;
   
@@ -105,55 +106,57 @@ export const registerPlayerToTeam = async (req: Request, res: Response): Promise
 
 
 // this end will be auto triggered from organizer micro when player score is updated in match table
-export const updatePlayerStats = async (req: Request, res: Response): Promise<void> => {
-    const { player_id } = req.params;
-    const { runs, wickets } = req.body;
+// export const updatePlayerStats = async (req: Request, res: Response): Promise<void> => {
+//     const { player_id } = req.params;
+//     const { runs, wickets } = req.body;
 
-    console.log("Player ID from request:", player_id); // Log the player ID
-    console.log("Runs to update:", runs);
-    console.log("Wickets to update:", wickets);
+//     console.log("Player ID from request:", player_id); // Log the player ID
+//     console.log("Runs to update:", runs);
+//     console.log("Wickets to update:", wickets);
 
-    try {
-        // Find the player by playerId
-        const player = await Player.findOne({ player_id: player_id });
-        console.log("Player:", player); // Log the found player
+//     try {
+//         // Find the player by playerId
+//         const player = await Player.findOne({ player_id: player_id });
+//         console.log("Player:", player); // Log the found player
         
-        if (!player) {
-            res.status(404).json({ message: 'Player not found' });
-            return;
-        }
+//         if (!player) {
+//             res.status(404).json({ message: 'Player not found' });
+//             return;
+//         }
 
-        // Update player stats in battingStats and bowlingStats
-        if (runs !== undefined) {
-            player.battingStats = {
-                ...player.battingStats,
-                runs: (player.battingStats?.runs || 0) + runs,
-                matchesPlayed: (player.battingStats?.matchesPlayed || 0) + 1,
-            };
-        }
+//         // Update player stats in battingStats and bowlingStats
+//         if (runs !== undefined) {
+//             player.battingStats = {
+//                 ...player.battingStats,
+//                 runs: (player.battingStats?.runs || 0) + runs,
+//                 matchesPlayed: (player.battingStats?.matchesPlayed || 0) + 1,
+//             };
+//         }
         
-        if (wickets !== undefined) {
-            player.bowlingStats = {
-                ...player.bowlingStats,
-                wickets: (player.bowlingStats?.wickets || 0) + wickets,
-                matchesPlayed: (player.bowlingStats?.matchesPlayed || 0) + 1,
-            };
-        }
+//         if (wickets !== undefined) {
+//             player.bowlingStats = {
+//                 ...player.bowlingStats,
+//                 wickets: (player.bowlingStats?.wickets || 0) + wickets,
+//                 matchesPlayed: (player.bowlingStats?.matchesPlayed || 0) + 1,
+//             };
+//         }
 
-        await player.save();
-        res.status(200).json(player);
-    } catch (error) {
-        res.status(500).json({ message: 'Error updating player stats', error });
-    }
-};
+//         await player.save();
+//         res.status(200).json(player);
+//     } catch (error) {
+//         res.status(500).json({ message: 'Error updating player stats', error });
+//     }
+// };
 
 
 
 export const getPlayerIdplayernamefromplayerid = async (req: Request, res: Response): Promise<void> => {
-    const { playerId } = req.params;
-  
+    const { player_id } = req.params;
+    console.log('Request URL:', req.originalUrl);  // Log the original URL
+  console.log('Request Params:', req.params);   
+    console.log('Received playerId:', player_id);
     try {
-      const player = await Player.findOne({ playerId });
+      const player = await Player.findOne({ player_id });
   
       if (!player) {
         res.status(404).json({ message: 'Player not found' });
@@ -167,6 +170,67 @@ export const getPlayerIdplayernamefromplayerid = async (req: Request, res: Respo
       });
     } catch (error) {
       console.error('Error fetching player:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+
+  export const updatePlayerStats = async (req: Request, res: Response): Promise<void> => {
+    const {  player_id } = req.params; // Get playerId from route parameters
+    const {
+      runs,
+      wickets,
+      balls,
+      fours,
+      sixes,
+      catches,
+      strikeRate,
+    } = req.body;
+  
+    try {
+      // Find the player by playerId
+      const player = await Player.findOne({ player_id: player_id });
+      if (!player) {
+        res.status(404).json({ message: 'Player not found' });
+        return;
+      }
+  
+      // Update only the provided fields
+      if (!player.battingStats) {
+        player.battingStats = {}; // Initialize if undefined
+    }
+    if (!player.bowlingStats) {
+        player.bowlingStats = {}; // Initialize if undefined
+    }
+    
+    // Now safely update the fields
+    if (runs !== undefined) {
+        player.battingStats.runs = (player.battingStats.runs ?? 0) + runs; // Add runs to existing
+    }
+    if (wickets !== undefined) {
+        player.bowlingStats.wickets = (player.bowlingStats.wickets ?? 0) + wickets; // Add wickets to existing
+    }
+    if (balls !== undefined) {
+        player.battingStats.matchesPlayed = (player.battingStats.matchesPlayed ?? 0) + 1; // Increment matches played if balls are provided
+    }
+    if (fours !== undefined) {
+        player.battingStats.fours = fours; // Update fours
+    }
+    if (sixes !== undefined) {
+        player.battingStats.sixes = sixes; // Update sixes
+    }
+    if (catches !== undefined) {
+        player.bowlingStats.catches = catches; // Update catches
+    }
+    if (strikeRate !== undefined) {
+        player.battingStats.strikeRate = strikeRate; // Update strike rate
+    }
+      // Save the updated player document
+      await player.save(); // saving the player information to database 
+  
+      res.status(200).json({ message: 'Player statistics updated successfully', player });
+    } catch (error) {
+      console.error('Error updating player statistics:', error);
       res.status(500).json({ message: 'Internal server error' });
     }
   };

@@ -96,7 +96,7 @@ export const fetchTeamsForTournament = async (req: Request, res: Response) => {
 
   try {
     // Step 1: Directly fetch the tournament details from the database
-    const tournament = await Tournament.findById(tournamentId).select('teams'); // Assuming 'teams' is an array of team IDs
+    const tournament = await Tournament.findOne({tournamentId}).select('teams'); // Assuming 'teams' is an array of team IDs
 
     if (!tournament || !tournament.teams || tournament.teams.length === 0) {
       res.status(404).json({ message: 'No teams found for this tournament' });
@@ -105,7 +105,7 @@ export const fetchTeamsForTournament = async (req: Request, res: Response) => {
     ///teams/:teamId
     // Step 2: Fetch each team's details concurrently using Promise.all
     const teamDetailsPromises = tournament.teams.map((teamId: string) => 
-      axios.get(`http://localhost:5000/teams/${teamId}`).then(response => response.data)
+      axios.get(`http://localhost:5000/api/teams/${teamId}`).then(response => response.data)
     );
 
     const teams = await Promise.all(teamDetailsPromises);
