@@ -11,4 +11,5 @@ const RegisteredPlayerSchema: Schema = new Schema({
     teamId: { type: String, required: true }
 });
 
+// playerid and teamid  |accept|  |reject|
 export default mongoose.model<IRegisteredPlayer>('RegisteredPlayer', RegisteredPlayerSchema);

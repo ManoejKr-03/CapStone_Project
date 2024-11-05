@@ -10,7 +10,7 @@ router.put('/player_id/:player_id', PlayerController.updatePlayer); // Update he
 router.delete('/player_id/:player_id', PlayerController.deletePlayer); // Update here
 router.post('/register/:playerId/:teamId', PlayerController.registerPlayerToTeam); //player to team registered player
 router.get('/user_id/:user_id',PlayerController.getPlayerIdfromUserId);
-router.put('/players/:player_id/stats', PlayerController.updatePlayerStats);
+router.put('/players/:player_id/stats', PlayerController.updatePlayerStats); //http://localhost:8000/api/players/:playerId/stats'
 router.get('/player/:player_id',PlayerController.getPlayerIdplayernamefromplayerid);
 //http://localhost:3001/api/players/${playerId}/stats
 

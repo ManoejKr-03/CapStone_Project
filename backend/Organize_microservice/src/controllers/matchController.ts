@@ -149,8 +149,8 @@ export const getMatchDetails = async (req: Request, res: Response): Promise<void
   }
 };
 
-const TEAM_MICROSERVICE_URL = 'http://localhost:5000/api'; // Replace with actual URL
-const PLAYER_MICROSERVICE_URL = 'http://localhost:5001/api'
+const TEAM_MICROSERVICE_URL = 'http://localhost:5000/api'; // Replace with actual URL  http://localhost:5000/api/teams/teamA/update-stats
+const PLAYER_MICROSERVICE_URL = 'http://localhost:8000' 
 
 
 export const createMatch = async (req: Request, res: Response): Promise<void> => {
@@ -160,6 +160,7 @@ export const createMatch = async (req: Request, res: Response): Promise<void> =>
     // Get player IDs for the first team /:teamId/players
     const firstTeamResponse = await axios.get(`${TEAM_MICROSERVICE_URL}/${firstTeamId}/players`);
     const firstTeamPlayerIds = firstTeamResponse.data.players;
+
 
     // Get player IDs for the second team
     const secondTeamResponse = await axios.get(`${TEAM_MICROSERVICE_URL}/${secondTeamId}/players`);
@@ -244,7 +245,9 @@ export const updateMatchInfo = async (req: Request, res: Response): Promise<void
 
   try {
     // Find the match by matchId and seriesId
-    const match = await Match.findOne({ matchId, seriesId });
+    console.log(matchId, seriesId);
+    const match = await Match.findOne({ matchId: matchId, tournamentId: seriesId });
+  //  console.log(match);
     if (!match) {
       res.status(404).json({ message: 'Match not found' });
       return;
@@ -263,14 +266,64 @@ export const updateMatchInfo = async (req: Request, res: Response): Promise<void
     if (status !== undefined) match.status = status;
     if (winner !== undefined) match.winner = winner;
 
+    console.log('Received update for match:');
+    console.log(`matchNumber: ${match.matchNumber}`);
+    console.log(`matchType: ${match.matchType}`);
+    console.log(`tournamentId: ${match.tournamentId}`);
+    console.log(`firstTeamId: ${match.firstTeamId}`);
+    console.log(`secondTeamId: ${match.secondTeamId}`);
+    console.log(`firstTeamScore: ${match.firstTeamScore}`);
+    console.log(`secondTeamScore: ${match.secondTeamScore}`);
+    console.log(`firstTeamWickets: ${match.firstTeamWickets}`);
+    console.log(`secondTeamWickets: ${match.secondTeamWickets}`);
+    console.log(`status: ${match.status}`);
+    console.log(`winner: ${winner}`);
+    
+    //update the match stats when winner is announced
+    console.log(winner);
+    console.log(`Comparing winner: ${winner} with firstTeamId: ${match.firstTeamId} and secondTeamId: ${match.secondTeamId}`);
+
+    if (winner && (winner === match.firstTeamId || winner === match.secondTeamId)) {
+      console.log("inside winner if");
+      const losingTeamId = winner === match.firstTeamId ? match.secondTeamId : match.firstTeamId;
+
+      console.log("Winner detected:", winner);
+      // Call team microservice to update winner stats  http://localhost:5000/api/teams/teamA/update-stats
+      await axios.put(`${TEAM_MICROSERVICE_URL}/teams/${winner}/update-stats`, {
+        wins: 1,
+        matchesPlayed: 1,
+      });
+
+      // Call team microservice to update loser stats
+      await axios.put(`${TEAM_MICROSERVICE_URL}/teams/${losingTeamId}/update-stats`, {
+        losses: 1,
+        matchesPlayed: 1,
+      });
+
+      // Update the match's winner field
+      match.winner = winner;
+    } else if (winner !== undefined) {
+      // Update winner directly if it's not a team ID but specified
+      match.winner = winner;
+    }
+
     // Save the updated match document
     await match.save();
 
-    res.status(200).json({ message: 'Match information updated successfully', match });
+    res.status(200).json({ message: 'Match and team information updated successfully', match });
   } catch (error) {
     console.error('Error updating match information:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
+
+    // Save the updated match document
+  //   await match.save();
+
+  //   res.status(200).json({ message: 'Match information updated successfully', match });
+  // } catch (error) {
+  //   console.error('Error updating match information:', error);
+  //   res.status(500).json({ message: 'Internal server error' });
+  // }
 };
 
 
@@ -285,6 +338,11 @@ export const updatePlayerStats = async (req: Request, res: Response): Promise<vo
     // Step 1: Find the match by matchId and seriesId
   //  const match = await Match.findOne({ matchId, seriesId });
   const match = await Match.findOne({ matchId: matchId, tournamentId: seriesId });
+  if (match) {
+    // Ensure matchType and matchNumber have values, or set them to defaults
+    match.matchType = match.matchType || 'group';
+    match.matchNumber = match.matchNumber || '0';
+  }
     console.log("match value : " + match);
     if (!match) {
       res.status(404).json({ message: 'Match not found' });
@@ -295,33 +353,49 @@ export const updatePlayerStats = async (req: Request, res: Response): Promise<vo
     const playerInFirstTeam = match.firstTeamPlayers.find((p: any) => p.playerId === playerId);
     const playerInSecondTeam = match.secondTeamPlayers.find((p: any) => p.playerId === playerId);
     const player = playerInFirstTeam || playerInSecondTeam;
-
+    console.log(player);
     if (!player) {
       res.status(404).json({ message: 'Player not found in this match' });
       return;
     }
 
-    // Step 3: Update player stats in the Player microservice http://localhost:5001/api/player/:playerId/stats'
-    
+    // Step 3: Update player stats in the Player microservice http://localhost:8000/api/players/:playerId/stats'
+    if (balls > 0) {
+      player.strikeRate = (runs / balls) * 100;
+    } else {
+      player.strikeRate = 0;
+    }
     await axios.put(`${PLAYER_MICROSERVICE_URL}/players/${playerId}/stats`, {
-      runs: runs !== undefined ? runs : player.runs,
-      wickets: wickets !== undefined ? wickets : player.wickets,
-      balls: balls !== undefined ? balls : player.balls,
-      fours: fours !== undefined ? fours : player.fours,
-      sixes: sixes !== undefined ? sixes : player.sixes,
-      catches: catches !== undefined ? catches : player.catches,
-      strikeRate: strikeRate !== undefined ? strikeRate : player.strikeRate,
+      runs: runs !== undefined ? runs :0,
+      wickets: wickets !== undefined ? wickets : 0,
+      balls: balls !== undefined ? balls : 0,
+      fours: fours !== undefined ? fours :0,
+      sixes: sixes !== undefined ? sixes : 0,
+      catches: catches !== undefined ? catches : 0,
+      strikeRate: player.strikeRate !== 0 ? player.strikeRate : 0,
     });
 
     // Step 4: Update player stats in the match document
-    if (runs !== undefined) player.runs += runs;
-    if (wickets !== undefined) player.wickets += wickets;
-    if (balls !== undefined) player.balls += balls;
-    if (fours !== undefined) player.fours += fours;
-    if (sixes !== undefined) player.sixes += sixes;
-    if (catches !== undefined) player.catches += catches;
-    if (strikeRate !== undefined) player.strikeRate = strikeRate;
+    console.log(balls +''+fours +''+sixes +''+strikeRate);
+    player.balls = player.balls || 0;
+    player.fours = player.fours || 0;
+    player.sixes = player.sixes || 0;
+    player.catches = player.catches || 0;
+    
+    // Now perform the increments
+    player.balls += balls;
+    player.fours += fours;
+    player.sixes += sixes;
+    player.catches += catches;
 
+      
+
+    if (playerInFirstTeam) {
+      match.markModified('firstTeamPlayers');
+    } else if (playerInSecondTeam) {
+      match.markModified('secondTeamPlayers');
+    }
+   
     // Save the updated match document
     await match.save();
 
@@ -331,5 +405,83 @@ export const updatePlayerStats = async (req: Request, res: Response): Promise<vo
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+
+// to get the player matchs status like ongoing, upcomming and completed
+export const getUpcomingMatches = async (req: Request, res: Response): Promise<void> => {
+  const { playerId } = req.params;
+
+  try {
+    const upcomingMatches = await Match.find({
+      status: 'upcoming',
+      $or: [
+        { 'firstTeamPlayers.playerId': playerId },
+        { 'secondTeamPlayers.playerId': playerId }
+      ]
+    });
+
+    if (upcomingMatches.length === 0) {
+      res.status(404).json({ message: 'No upcoming matches found for this player' });
+      return;
+    }
+
+    res.status(200).json({ message: 'Upcoming matches found', upcomingMatches });
+  } catch (error) {
+    console.error('Error fetching upcoming matches:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// Fetch ongoing matches for a specific player
+export const getOngoingMatches = async (req: Request, res: Response): Promise<void> => {
+  const { playerId } = req.params;
+
+  try {
+    const ongoingMatches = await Match.find({
+      status: 'ongoing',
+      $or: [
+        { 'firstTeamPlayers.playerId': playerId },
+        { 'secondTeamPlayers.playerId': playerId }
+      ]
+    });
+
+    if (ongoingMatches.length === 0) {
+      res.status(404).json({ message: 'No ongoing matches found for this player' });
+      return;
+    }
+
+    res.status(200).json({ message: 'Ongoing matches found', ongoingMatches });
+  } catch (error) {
+    console.error('Error fetching ongoing matches:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export const getCompletedMatches = async (req: Request, res: Response): Promise<void> => {
+  const { playerId } = req.params;
+
+  try {
+    const completedMatches = await Match.find({
+      status: 'completed',
+      $or: [
+        { 'firstTeamPlayers.playerId': playerId },
+        { 'secondTeamPlayers.playerId': playerId }
+      ]
+    });
+
+    if (completedMatches.length === 0) {
+      res.status(404).json({ message: 'No completed matches found for this player' });
+      return;
+    }
+
+    res.status(200).json({ message: 'Completed matches found', completedMatches });
+  } catch (error) {
+    console.error('Error fetching completed matches:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
 
 

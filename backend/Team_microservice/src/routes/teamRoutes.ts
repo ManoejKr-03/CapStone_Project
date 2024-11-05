@@ -13,6 +13,9 @@ import {
   getTeamById,
   registerPlayerdetails,
   getPlayersByTeamId,
+  deletePlayerFromRegistered,
+  assignPlayerToTeam,
+  updateTeamStats,
   
 } from '../controllers/teamController';
 
@@ -55,7 +58,14 @@ router.post('/registerPlayer', registerPlayerdetails);
 router.get('/:teamId/players', getPlayersByTeamId);
 
 
- 
+//Accepting and deleting the players for the team registration process
+router.post('/:playerId/:teamId', assignPlayerToTeam);
+router.delete('/deleteRegistered/:playerId', deletePlayerFromRegistered);
+
+
+
+//route for the team stats update ( from organization microservicea)
+router.put('/teams/:teamId/update-stats', updateTeamStats);
 
 
 export default router;

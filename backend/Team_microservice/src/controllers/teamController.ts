@@ -216,6 +216,83 @@ export const getPlayersByTeamId = async (req: Request, res: Response): Promise<v
 };
 
 
+// accepting the players request for the team ( ACCEPT BUTTON)
+export const assignPlayerToTeam = async (req: Request, res: Response): Promise<void> => {
+  const { playerId, teamId } = req.params;
 
-//
+  try {
+    // Find and delete the player from Registered database
+    const registeredPlayer = await RegisteredPlayer.findOneAndDelete({ playerId, teamId });
+    
+    if (!registeredPlayer) {
+      res.status(404).json({ message: 'Player not found in Registered database' });
+      return;
+    }
+
+    // Find the team and add the player to playerList
+    const team = await Team.findOneAndUpdate(
+      { teamId },
+      { $addToSet: { playerList: playerId } }, // Add player if not already in the list
+      { new: true, upsert: true } // Create team if it doesn't exist
+    );
+
+    res.status(200).json({
+      message: 'Player added to team and removed from Registered database',
+      team
+    });
+  } catch (error) {
+    console.error('Error assigning player to team:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+// delete the playerid and teamid from the registered database ( DELETE BUTTON)
+export const deletePlayerFromRegistered = async (req: Request, res: Response): Promise<void> => {
+  const { playerId } = req.params;
+
+  try {
+    const deletedPlayer = await RegisteredPlayer.findOneAndDelete({ playerId });
+
+    if (!deletedPlayer) {
+      res.status(404).json({ message: 'Player not found in Registered database' });
+      return;
+    }
+
+    res.status(200).json({ message: 'Player removed from Registered database' });
+  } catch (error) {
+    console.error('Error deleting player from Registered database:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+//updating the team stats when winner is announced in organization microservices
+// Endpoint: PUT /teams/:teamId/update-stats
+export const updateTeamStats = async (req: Request, res: Response): Promise<void> => {
+  const { teamId } = req.params;
+  const { wins = 0, losses = 0, matchesPlayed = 0 } = req.body;
+
+  try {
+    // Find the team by teamId
+    const team = await Team.findOne({teamId});
+    if (!team) {
+      res.status(404).json({ message: 'Team not found' });
+      return;
+    }
+
+    // Update the team statistics by incrementing the provided values
+    team.wins += wins;
+    team.losses += losses;
+    team.noOfMatches += matchesPlayed;
+
+    // Save the updated team document
+    await team.save();
+
+    res.status(200).json({ message: 'Team statistics updated successfully', team });
+  } catch (error) {
+    console.error('Error updating team statistics:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
