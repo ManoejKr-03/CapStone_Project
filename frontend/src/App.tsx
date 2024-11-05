@@ -9,6 +9,7 @@ import PlayerDashboard from './pages/player/PlayerDashboard';
 import { AuthProvider } from './components/AuthContext';
 import PlayerProfile from './pages/player/PlayerProfile';
 import PlayerDetails from './pages/player/PlayerDetails';
+import OrganizerDashboard from './pages/organizer/OrganizerDashboard';
 
 const App: React.FC = () => (
   <AuthProvider>
@@ -20,6 +21,7 @@ const App: React.FC = () => (
         <Route path="/signup" element={<SignUp />} />
         <Route path="/select-role" element={<RoleSelection />} />
         <Route path="/player-dashboard/*" element={<PlayerDashboard />} />
+        <Route path="/organizer-dashboard/*" element={<OrganizerDashboard />} />
         <Route path="/player-profile" element={<PlayerProfile/>}/>
         {/* <Route path = "/palyer-details" element = {<PlayerDetails/>}/> */}
       </Routes>

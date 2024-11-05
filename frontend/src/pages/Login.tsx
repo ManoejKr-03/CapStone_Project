@@ -1,3 +1,4 @@
+// src/components/Login.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -37,12 +38,13 @@ const Login: React.FC = () => {
 
         // Check the role and profile completion
         if (user.role === 'Player') {
-         // console.log(user.playerProfileCompleted);
           if (!user.playerProfileCompleted) {
             navigate('/player-profile'); // Redirect to player profile if not completed
           } else {
             navigate('/player-dashboard'); // Redirect to player dashboard if profile is completed
           }
+        } else if (user.role === 'Organizer') {
+          navigate('/organizer-dashboard'); // Redirect to organizer dashboard for organizers
         } else {
           navigate('/player-dashboard'); // Redirect to player dashboard for other roles
         }

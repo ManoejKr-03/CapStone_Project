@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface Tournament extends Document {
+  user_id:string,
   tournamentId: string;
   tournamentName: string;
   startDate: Date;
@@ -17,6 +18,7 @@ export interface Tournament extends Document {
 }
 
 const tournamentSchema: Schema = new Schema({
+  user_id:{type:String},
   tournamentId: { type: String, required: true },
   tournamentName: { type: String, required: true },
   startDate: { type: Date, required: true },
