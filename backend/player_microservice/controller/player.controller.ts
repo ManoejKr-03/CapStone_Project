@@ -194,9 +194,10 @@ export const getPlayerIdfromUserId = async (req:Request, res:Response): Promise<
     }
   };
 
-
+// it is used by organizer microseriver to update the player stats
   export const updatePlayerStats = async (req: Request, res: Response): Promise<void> => {
     const {  player_id } = req.params; // Get playerId from route parameters
+    console.log('request params' +req.params);
     const {
       runs,
       wickets,
@@ -209,7 +210,9 @@ export const getPlayerIdfromUserId = async (req:Request, res:Response): Promise<
   
     try {
       // Find the player by playerId
+      console.log('playerid details'+player_id);
       const player = await Player.findOne({ player_id: player_id });
+      console.log(player);
       if (!player) {
         res.status(404).json({ message: 'Player not found' });
         return;
@@ -251,7 +254,7 @@ export const getPlayerIdfromUserId = async (req:Request, res:Response): Promise<
       res.status(200).json({ message: 'Player statistics updated successfully', player });
     } catch (error) {
       console.error('Error updating player statistics:', error);
-      res.status(500).json({ message: 'Internal server error' });
+      res.status(500).json({ message: 'Internal server error from player microservice' });
     }
   };
 
