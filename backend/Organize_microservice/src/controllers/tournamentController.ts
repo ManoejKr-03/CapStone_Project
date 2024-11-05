@@ -15,6 +15,22 @@ export const createTournament = async (req: Request, res: Response): Promise<voi
   }
 };
 
+//fetching the tournament with user_id
+export const getTournamentsByUserId = async (req: Request, res: Response): Promise<void> => {
+  const { user_id } = req.params;
+
+  try {
+    const tournaments = await Tournament.find({ user_id });
+    if (tournaments.length === 0) {
+      res.status(404).json({ message: 'No tournaments found for this user.' });
+      return;
+    }
+    res.status(200).json(tournaments);
+  } catch (error) {
+    console.error('Error fetching tournaments:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
 //updating the tournaments details 
 export const updateTournament = async (req: Request, res: Response): Promise<void> => {
   const { tournamentId } = req.params;
