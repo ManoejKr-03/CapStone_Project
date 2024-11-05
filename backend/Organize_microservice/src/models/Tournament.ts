@@ -29,7 +29,7 @@ const tournamentSchema: Schema = new Schema({
   organizerName: { type: String, required: true },
   venue: { type: String, required: true },
   winnerTeam: { type: String, default: null },
-  teams: [{ type: String, required: true }],
+  teams: [{ type: String }],
 });
 
 export default mongoose.model<Tournament>('Tournament', tournamentSchema);

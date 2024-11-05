@@ -296,3 +296,32 @@ export const updateTeamStats = async (req: Request, res: Response): Promise<void
   }
 };
 
+
+//updating the team's seriesid when adding the team or updating the tournaments
+export const updateSeriesId = async (req: Request, res: Response): Promise<void> => {
+  const { teamId } = req.params;
+  const { seriesId } = req.body; //seriesId
+  console.log('seriesId:', seriesId);
+
+  try {
+    
+    const team = await Team.findOneAndUpdate(
+      { teamId: teamId }, // Use teamId field here
+      { seriesId },
+      { new: true, runValidators: true }
+    );
+
+    console.log(team);
+    if (!team) {
+      res.status(404).json({ message: 'Team not found' });
+      return;
+    }
+
+    res.status(200).json({ message: 'Team seriesId updated successfully', team });
+  } catch (error) {
+    console.error('Error updating team seriesId:', error);
+    res.status(500).json({ message: 'Internal Server Error', error });
+  }
+};
+
+

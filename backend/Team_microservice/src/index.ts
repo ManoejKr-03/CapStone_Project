@@ -37,5 +37,5 @@ mongoose.connect(dbConfig.url, {} as ConnectOptions)
 
 //Define routes here
  app.use('/api', teamRoutes);
- 
+  //api/update/:teamId/series 
 //app.use('/api/players', playerRoutes);

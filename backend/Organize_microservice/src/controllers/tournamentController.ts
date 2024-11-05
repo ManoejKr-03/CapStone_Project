@@ -5,15 +5,92 @@ import axios from 'axios';
 const router = Router();
 
 // Create a new tournament
-export const createTournament = async (req: Request, res: Response): Promise<void> => {
+// export const createTournament = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const tournament = new Tournament(req.body);
+//     await tournament.save();
+//     res.status(201).json(tournament);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error creating tournament', error });
+//   }
+// };
+ const TEAM_MICROSERVICE_URL='http://localhost:5000/api/teamsTournament'; // http://localhost:5000/api/teamsTournament/teamB/series
+//helper function to update the seriesid to the teamid
+async function updateTeamSeriesId(teamId: string, seriesId: string): Promise<void> {
   try {
-    const tournament = new Tournament(req.body);
-    await tournament.save();
-    res.status(201).json(tournament);
+    // Make a PUT request to the team microservice to update the seriesId for the specified team
+    console.log(teamId, seriesId);
+    await axios.put(`${TEAM_MICROSERVICE_URL}/${teamId}/series`, { seriesId });
   } catch (error) {
-    res.status(500).json({ message: 'Error creating tournament', error });
+    console.error('Error updating team seriesId:', error);
+    throw new Error('Failed to update team seriesId');
+  }
+}
+
+
+export const createOrUpdateTournament = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const {
+      user_id,
+      tournamentId,
+      tournamentName,
+      startDate,
+      endDate,
+      noOfOvers,
+      registrationDeadline,
+      rulesAndRegulations,
+      organizerName,
+      venue,
+      winnerTeam,
+      noOfTeams,
+      status,
+      teams,
+    } = req.body;
+
+    // Create or update the tournament
+    const tournament = await Tournament.findOneAndUpdate(
+      { tournamentId }, // Find tournament by its ID
+      {
+        user_id,
+        tournamentId,
+        tournamentName,
+        startDate,
+        endDate,
+        noOfOvers,
+        registrationDeadline,
+        rulesAndRegulations,
+        organizerName,
+        venue,
+        winnerTeam,
+        noOfTeams,
+        status,
+        teams,
+      },
+      { new: true, upsert: true, runValidators: true } // Upsert to create if not exists
+    );
+
+    // Update each team’s seriesId if the list of teams is provided
+    if (teams && Array.isArray(teams)) {
+      await Promise.all(
+        teams.map(async (teamId: string) => {
+          if (teamId) {
+            console.log("teamId: ", teamId);
+            await updateTeamSeriesId(teamId, tournament?.tournamentId);
+          }
+        })
+      );
+    }
+
+    res.status(201).json({
+      message: 'Tournament created/updated successfully',
+      tournament,
+    });
+  } catch (error) {
+    console.error('Error creating or updating tournament:', error);
+    res.status(500).json({ message: 'Error creating/updating tournament or updating teams', error });
   }
 };
+
 
 //fetching the tournament with user_id
 export const getTournamentsByUserId = async (req: Request, res: Response): Promise<void> => {
@@ -32,6 +109,30 @@ export const getTournamentsByUserId = async (req: Request, res: Response): Promi
   }
 };
 //updating the tournaments details 
+// export const updateTournament = async (req: Request, res: Response): Promise<void> => {
+//   const { tournamentId } = req.params;
+//   const updateData = req.body; // teamid , -> check that team seriesid -> if empty then update in t
+
+//   try {
+//     // Find and update the tournament with new data
+//     const updatedTournament = await Tournament.findOneAndUpdate(
+//       { tournamentId }, // Find tournament by tournamentId
+//       { $set: updateData }, // Update with data provided in request body
+//       { new: true, runValidators: true } // Return the updated document and apply schema validations
+//     );
+
+//     if (!updatedTournament) {
+//       res.status(404).json({ message: 'Tournament not found' });
+//       return;
+//     }
+
+//     res.status(200).json({ message: 'Tournament updated successfully', tournament: updatedTournament });
+//   } catch (error) {
+//     console.error('Error updating tournament:', error);
+//     res.status(500).json({ message: 'Internal Server Error', error: (error as Error).message });
+//   }
+// };
+// Update Tournament
 export const updateTournament = async (req: Request, res: Response): Promise<void> => {
   const { tournamentId } = req.params;
   const updateData = req.body;
@@ -47,6 +148,13 @@ export const updateTournament = async (req: Request, res: Response): Promise<voi
     if (!updatedTournament) {
       res.status(404).json({ message: 'Tournament not found' });
       return;
+    }
+
+    // Check if teamId is provided in the request body
+    const { teamId } = req.body;
+    if (teamId) {
+      // Update the seriesId of the specified team in the team microservice
+      await updateTeamSeriesId(teamId, updatedTournament.tournamentId);
     }
 
     res.status(200).json({ message: 'Tournament updated successfully', tournament: updatedTournament });

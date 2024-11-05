@@ -16,6 +16,7 @@ import {
   deletePlayerFromRegistered,
   assignPlayerToTeam,
   updateTeamStats,
+  updateSeriesId,
   
 } from '../controllers/teamController';
 
@@ -66,6 +67,11 @@ router.delete('/deleteRegistered/:playerId', deletePlayerFromRegistered);
 
 //route for the team stats update ( from organization microservicea)
 router.put('/teams/:teamId/update-stats', updateTeamStats);
+
+
+//route for team stats for updating the seriesid when creating or updating the series
+//${TEAM_MICROSERVICE_URL}/${teamId}/series
+router.put('/teamsTournament/:teamId/series',updateSeriesId);
 
 
 export default router;
