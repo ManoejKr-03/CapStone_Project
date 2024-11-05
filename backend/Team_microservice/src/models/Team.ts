@@ -31,7 +31,11 @@ export interface TeamDocument extends Document {
 const TeamSchema: Schema = new Schema({
   teamId: { type: String, required: true, unique: true },  // Define custom ID with uniqueness constraint
   teamName: { type: String, required: true },
+<<<<<<< HEAD
   seriesId: { type: String},
+=======
+  seriesId: { type: String, required: true },
+>>>>>>> e2a44e1f8b1523bce475786ae268b41ce5d7ee6d
   noOfMatches: { type: Number, default: 0 },
   wins: { type: Number, default: 0 },
   losses: { type: Number, default: 0 },

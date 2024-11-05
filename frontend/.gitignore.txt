@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /node_modules
 /frontend/node_modules/**
 # eslint cache
 .eslintcache
+=======
+/node_modules
+>>>>>>> e2a44e1f8b1523bce475786ae268b41ce5d7ee6d
